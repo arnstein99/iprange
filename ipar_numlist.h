@@ -3,6 +3,7 @@
 
 #include <exception>
 #include <functional>
+#include <limits>
 #include <map>
 
 namespace IPAR {
@@ -13,10 +14,10 @@ class numeric_range_error : public std::exception
     virtual const char* what() const noexcept;
 };
 
-template<typename BOUND> class NumList;
+template<typename BOUND, BOUND BMAX> class NumList;
 
 // A dense interval.
-template<typename BOUND>
+template<typename BOUND, BOUND BMAX=std::numeric_limits<BOUND>::max()>
 class NumRange : private std::pair<BOUND, BOUND>
 {
 public:
@@ -41,14 +42,14 @@ public:
     // argument middle.
     NumRange(NumRange& nr, BOUND middle) throw (numeric_range_error);
 
-    friend class NumList<BOUND>;
+    friend class NumList<BOUND,BMAX>;
 
 }; // class NumRange
 
 // A collection of intervals, maintained in a standard form. What this means is
 // that the intervals are always sorted, and there are never two adjacent or
 // overlapping intervals.
-template<typename BOUND>
+template<typename BOUND, BOUND BMAX=std::numeric_limits<BOUND>::max()>
 class NumList : private std::map<BOUND,BOUND>
 {
 public:
@@ -64,11 +65,12 @@ public:
     const std::map<BOUND, BOUND>& get() const { return *this; }
 
     // Add an interval to the collection.
-    void add (const NumRange<BOUND>& range) noexcept;
+    void add (const NumRange<BOUND,BMAX>& range) noexcept;
 
     // Remove an interval from the collection. The interval need not be part of
     // the collection. This method handles overlaps, etc.
-    void subtract (const NumRange<BOUND>& range) throw (std::exception);
+    void subtract (const NumRange<BOUND,BMAX>& range)
+        throw (std::exception);
 
     // Report extreme values
     BOUND min() const throw (numeric_range_error);
