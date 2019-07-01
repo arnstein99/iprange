@@ -149,7 +149,7 @@ GapInfo max_coverage (
 	if (iter->first == lower_bound) continue;
 
 	// Stop when we run past the upper limit
-	if (iter->first > upper_bound) break;
+	if (iter->first > my_max) break;
 
 	// Compute a score for this candidate
 	auto cov = coverage (lower_bound, iter->second, iplist);
@@ -177,7 +177,7 @@ std::pair<uint32_t,double>  coverage (
 	if (!IPAR::intersect (lower_bound, upper_bound,
 			     iter->first, iter->second,
 			     inter_lower_bound, inter_upper_bound))
-	throw (std::exception());
+	break;
 	++cov.first;
 	cov.second += (inter_upper_bound - inter_lower_bound + 1);
     }
