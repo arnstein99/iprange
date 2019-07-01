@@ -60,11 +60,10 @@ int main (int argc, char* argv[])
     } // End loop over input files to intersect
 
     // Now subtract from the main list
-    complem.process (
-	[&mainlist] (uint32_t lower, uint32_t upper) {
-	    mainlist.subtract (IPAR::Range(lower, upper));
-	}
-    );
+    for (auto range : complem.get())
+    {
+	mainlist.subtract (IPAR::Range(range.first, range.second));
+    }
 
     // Report
     cerr << mainlist.num_operations() << " operations applied" << endl;

@@ -29,19 +29,12 @@ int main (int argc, char* /*argv*/[])
     // Loop over lines of input
     IPAR::TextReader reader(cin);
     string word;
+    IPAR::Range iprange;
     while (reader >> word)
     {
 	// Assume the word is a range of IPv4 addresses
 	try {
-	    IPAR::Range iprange(word);
-
-	    // Expand the range
-	    auto lower = iprange.lower_bound();
-	    auto upper = iprange.upper_bound();
-	    while (lower <= upper)
-	    {
-		cout << setw(8) << lower++ << endl;
-	    }
+	    iprange = IPAR::Range(word);
 	}
 	catch (const exception& ex) {
 	    cerr << "ERROR: " << ex.what() << " at line " << reader.line_no()
@@ -49,6 +42,13 @@ int main (int argc, char* /*argv*/[])
 	    cerr << reader.current_line() << endl;
 	    cerr << "Last input was \"" << word << "\"" << endl;
 	    return 1;
+	}
+	// Expand the range
+	auto lower = iprange.get().first;
+	auto upper = iprange.get().second;
+	while (lower <= upper)
+	{
+	    cout << setw(8) << lower++ << endl;
 	}
     }
 

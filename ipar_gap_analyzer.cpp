@@ -85,13 +85,12 @@ void find_gaps(IPAR::List& iplist)
 {
     GapInfoSet gset;
 
-    iplist.process(
-        [&iplist, &gset] (uint32_t lower_bound, uint32_t upper_bound) {
-	    // Debug code
-            cerr << '.' << flush;
-	    my_process(iplist, gset, lower_bound, upper_bound);
-	}
-    );
+    for (auto range : iplist.get())
+    {
+	// Debug code
+	cerr << '.' << flush;
+	my_process(iplist, gset, range.first, range.second);
+    }
 
     // Report
     for (auto entry : gset)
@@ -143,26 +142,24 @@ GapInfo max_coverage (
 	    my_max = test_val;
     }
 
-    iplist.process(
-        lower_bound,
-	my_max,
-        [lower_bound, &iplist, &best] (
-	    uint32_t other_lower_bound, uint32_t other_upper_bound)
+    for (auto iter = iplist.get().lower_bound(lower_bound) ; 
+         iter != iplist.get().cend() ; ++iter)
+    {
+	// Skip own self
+	if (iter->first == lower_bound) continue;
+
+	// Stop when we run past the upper limit
+	if (iter->first > upper_bound) break;
+
+	// Compute a score for this candidate
+	auto cov = coverage (lower_bound, iter->second, iplist);
+	if (cov.second > best.mScore)
 	{
-	    // Skip own self
-	    if (other_lower_bound == lower_bound) return;
-
-	    // Compute a score for this candidate
-	    auto cov = coverage (lower_bound, other_upper_bound, iplist);
-	    if (cov.second > best.mScore)
-	    {
-		best.mExpandedUpper = other_upper_bound;
-		best.mNumCovered = cov.first;
-		best.mScore = cov.second;
-	    }
+	    best.mExpandedUpper = iter->second;
+	    best.mNumCovered = cov.first;
+	    best.mScore = cov.second;
 	}
-    );
-
+    }
     return best;
 }
 
@@ -173,21 +170,17 @@ std::pair<uint32_t,double>  coverage (
 {
     std::pair<uint32_t,double> cov {0, 0.0};
 
-    iplist.process(
-        lower_bound,
-	upper_bound,
-        [&cov, lower_bound, upper_bound] (
-	    uint32_t other_lower_bound, uint32_t other_upper_bound)
-	{
-	    uint32_t inter_lower_bound, inter_upper_bound;
-	    if (!IPAR::intersect (lower_bound, upper_bound,
-	                         other_lower_bound, other_upper_bound,
-				 inter_lower_bound, inter_upper_bound))
-	    throw (std::exception());
-	    ++cov.first;
-	    cov.second += (inter_upper_bound - inter_lower_bound + 1);
-	}
-    );
+    for (auto iter = iplist.get().lower_bound(lower_bound) ; 
+         iter != iplist.get().cend() ; ++iter)
+    {
+	uint32_t inter_lower_bound, inter_upper_bound;
+	if (!IPAR::intersect (lower_bound, upper_bound,
+			     iter->first, iter->second,
+			     inter_lower_bound, inter_upper_bound))
+	throw (std::exception());
+	++cov.first;
+	cov.second += (inter_upper_bound - inter_lower_bound + 1);
+    }
     cov.second = cov.second / (upper_bound - lower_bound + 1);
     return cov;
 }

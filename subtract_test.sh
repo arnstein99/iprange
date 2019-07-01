@@ -13,7 +13,7 @@ fi
 
 diff \
     <(comm -23 \
-        <(./ipar_read -test < "$1") \
-        <(./ipar_read -test < "$2") \
+        <(./ipar_read -hex < "$1") \
+        <(./ipar_read -hex < "$2") \
     ) \
-    <(./ipar_read -test < test_result.txt)
+    <(./ipar_read -hex < test_result.txt)

@@ -8,39 +8,39 @@ namespace IPAR
 
 namespace { // anonymous
 
-    uint32_t string_to_int(const std::string& expr) throw (ip_domain_error)
+uint32_t string_to_int(const std::string& expr) throw (ip_domain_error)
+{
+    uint32_t retval = 0;
+    std::string sub(expr);
+    while (sub != "")
     {
-        uint32_t retval = 0;
-	std::string sub(expr);
-	while (sub != "")
-	{
-	    char digit = sub[0];
-	    int idigit = static_cast<int>(digit) - '0';
-	    if ((idigit < 0) || (idigit > 9)) throw (ip_domain_error());
-	    retval = (retval * 10 ) + idigit;
-	    sub = sub.substr(1, std::string::npos);
-	}
-	return retval;
+	char digit = sub[0];
+	int idigit = static_cast<int>(digit) - '0';
+	if ((idigit < 0) || (idigit > 9)) throw (ip_domain_error());
+	retval = (retval * 10 ) + idigit;
+	sub = sub.substr(1, std::string::npos);
     }
+    return retval;
+}
 
-    std::string int8_to_string(uint32_t val)
-    {
-	std::stringstream ss;
-	ss << val;
-	return ss.str();
-    }
+std::string int8_to_string(uint32_t val)
+{
+    std::stringstream ss;
+    ss << val;
+    return ss.str();
+}
 
-    int count_trailing_zeroes(uint32_t val)
+int count_trailing_zeroes(uint32_t val)
+{
+    if (val == 0) return 32;
+    static const int MultiplyDeBruijnBitPosition[32] = 
     {
-	if (val == 0) return 32;
-	static const int MultiplyDeBruijnBitPosition[32] = 
-	{
-	  0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 
-	  31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
-	};
-	return
-	    MultiplyDeBruijnBitPosition[((val & -val) * 0x077CB531U) >> 27];
-    }
+      0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 
+      31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
+    };
+    return
+	MultiplyDeBruijnBitPosition[((val & -val) * 0x077CB531U) >> 27];
+}
 
 int log2(uint32_t val)
 {
@@ -70,66 +70,8 @@ int ceil_log2(uint32_t val)
     if ((static_cast<uint32_t>(1) << retval) != val) ++retval;
     return retval;
 }
-
-} // namespace anonymous
-
-
-///////////////////////////////////////
-// Implementation of exception classes
-///////////////////////////////////////
-
-const char* ip_range_error::what() const noexcept
-{
-    return "Could not parse IP range";
-}
-const char* ip_domain_error::what() const noexcept
-{
-    return "Could not parse IP address";
-}
-
-
-/////////////////////////////////
-// Implementation of Range class
-/////////////////////////////////
-
-Range::~Range()
-{
-}
-Range::Range(Range const& other)
- : mRep(other.mRep)
-{
-}
-Range& Range::operator=(Range const& other)
-{
-    if (&other != this)
-    {
-        mRep = other.mRep;
-    }
-    return *this;
-}
-Range::Range(Range&& other)
- : mRep(other.mRep)
-{
-}
-Range& Range::operator=(Range&& other)
-{
-    if (&other != this)
-    {
-        mRep = other.mRep;
-    }
-    return *this;
-}
-
-Range::Range(uint32_t lower, uint32_t upper) throw(ip_range_error)
- : mRep(lower, upper)
-{
-}
-
-uint32_t Range::lower_bound() const noexcept { return mRep.lower_bound(); }
-uint32_t Range::upper_bound() const noexcept { return mRep.upper_bound(); }
-
-Range::Range(const std::string& expr) throw (ip_domain_error, ip_range_error)
- : mRep(0,0)
+std::pair<uint32_t,uint32_t> maker(const std::string& expr)
+    throw (ip_domain_error, ip_range_error)
 {
     std::string left, right;
     uint32_t lower, upper;
@@ -165,11 +107,68 @@ Range::Range(const std::string& expr) throw (ip_domain_error, ip_range_error)
 	    upper = lower = quad_to_int(expr);
 	}
     }
-    mRep = NumRange<uint32_t> (lower, upper);
+    return std::make_pair(lower, upper);
+}
+
+} // namespace anonymous
+
+
+///////////////////////////////////////
+// Implementation of exception classes
+///////////////////////////////////////
+
+const char* ip_range_error::what() const noexcept
+{
+    return "Could not parse IP range";
+}
+const char* ip_domain_error::what() const noexcept
+{
+    return "Could not parse IP address";
+}
+
+
+/////////////////////////////////
+// Implementation of Range class
+/////////////////////////////////
+
+Range::Range() noexcept
+ : NumRange<uint32_t>()
+{
+}
+Range::~Range()
+{
+}
+Range::Range(Range const& other) noexcept
+ : NumRange<uint32_t>(other)
+{
+}
+Range& Range::operator=(Range const& other) noexcept
+{
+    NumRange<uint32_t>::operator=(other);
+    return *this;
+}
+Range::Range(Range&& other) noexcept
+ : NumRange<uint32_t>(other)
+{
+}
+Range& Range::operator=(Range&& other) noexcept
+{
+    NumRange<uint32_t>::operator=(other);
+    return *this;
+}
+
+Range::Range(uint32_t lower, uint32_t upper) throw(ip_range_error)
+ : NumRange<uint32_t>(lower, upper)
+{
+}
+
+Range::Range(const std::string& expr) throw (ip_domain_error, ip_range_error)
+ : NumRange<uint32_t>(maker(expr))
+{
 }
 
 Range::Range(Range& ra, std::string& middle) throw (ip_range_error)
- : mRep(ra.lower_bound(), quad_to_int(middle))
+ : NumRange<uint32_t>(ra.get().first, quad_to_int(middle))
 {
 }
 
@@ -178,106 +177,94 @@ Range::Range(Range& ra, std::string& middle) throw (ip_range_error)
 // Implementation of List class
 ////////////////////////////////
 
-List::List()
- : mRep{}
+List::List() noexcept
+ : NumList<uint32_t>()
 {
 }
 List::~List()
 {
 }
-
-List::List(List const& other)
- : mRep(other.mRep)
+List::List(List const& other) noexcept
+ : NumList<uint32_t>(other)
 {
 }
-
-List& List::operator=(List const& other)
+List& List::operator=(List const& other) noexcept
 {
-    if (&other != this)
-    {
-        mRep = other.mRep;
-    }
+    NumList<uint32_t>::operator=(other);
     return *this;
 }
-
-List::List(List&& other)
- : mRep (other.mRep)
+List::List(List&& other) noexcept
+ : NumList<uint32_t>(other)
 {
 }
-
-List& List::operator=(List&& other)
+List& List::operator=(List&& other) noexcept
 {
-    if (&other != this)
-    {
-        mRep = other.mRep;
-    }
+    NumList<uint32_t>::operator=(other);
     return *this;
 }
 
 void List::add(const Range& range) noexcept
 {
-    NumRange<uint32_t> elem(range.lower_bound(), range.upper_bound());
-    mRep.add(elem);
+    NumList<uint32_t>::add(range);
 }
 
 void List::subtract(const Range& range) throw (std::exception)
 {
-    NumRange<uint32_t> elem(range.lower_bound(), range.upper_bound());
-    mRep.subtract(elem);
+    NumList<uint32_t>::subtract(range);
 }
 
 void List::print(std::ostream& ost, bool dashes) const
 {
     if (dashes)
     {
-	mRep.process(
-	    [&ost] (uint32_t lower, uint32_t upper) {
-	        ost << int_to_quad(lower);
-		if (upper != lower)
-		    ost << '-' << int_to_quad(upper);
-		ost << std::endl;
-	    }
-	);
+	for (auto iter = get().cbegin() ; iter != get().cend() ; ++iter)
+	{
+	    uint32_t lower = iter->first;
+	    ost << int_to_quad(lower);
+	    if (iter->second != lower)
+		ost << '-' << int_to_quad(iter->second);
+	    ost << std::endl;
+	}
     }
     else
     {
-	mRep.process(
-	    [&ost] (uint32_t lower, uint32_t upper) { // Start lambda function
-		while (lower <= upper)
+	for (auto iter = get().cbegin() ; iter != get().cend() ; ++iter)
+	{
+	    uint32_t lower = iter->first;
+	    while (lower <= iter->second)
+	    {
+		int zbits = count_trailing_zeroes(lower);
+		int maxbits = log2(iter->second - lower + 1);
+		if (zbits > maxbits) zbits = maxbits;
+		if (zbits == 0)
 		{
-		    int zbits = count_trailing_zeroes(lower);
-		    int maxbits = log2(upper - lower + 1);
-		    if (zbits > maxbits) zbits = maxbits;
-		    if (zbits == 0)
-		    {
-			ost << int_to_quad(lower) << std::endl;
-			++lower;
-		    }
-		    else
-		    {
-			uint32_t mask = (1 << zbits) - 1;
-			uint32_t middle = lower | mask;
-			ost << int_to_quad(lower) << '/' << (32 - zbits)
-			    << std::endl;
-			// Avoid numeric overflow
-			static const uint32_t bmax =
-			    std::numeric_limits<uint32_t>::max();
-			if (middle == bmax) break;
-			lower = middle + 1;
-		    }
+		    ost << int_to_quad(lower) << std::endl;
+		    ++lower;
 		}
-	    } // End lambda function
-	);
+		else
+		{
+		    uint32_t mask = (1 << zbits) - 1;
+		    uint32_t middle = lower | mask;
+		    ost << int_to_quad(lower) << '/' << (32 - zbits)
+			<< std::endl;
+		    // Avoid numeric overflow
+		    static const uint32_t bmax =
+			std::numeric_limits<uint32_t>::max();
+		    if (middle == bmax) break;
+		    lower = middle + 1;
+		}
+	    }
+	}
     }
 }
 
 uint32_t List::min() const throw (numeric_range_error)
 {
-    return mRep.min();
+    return NumList<uint32_t>::min();
 }
 uint32_t List::max() const throw (numeric_range_error)
 {
-    return mRep.max();
+    return NumList<uint32_t>::max();
 }
 
 std::ostream& operator<< (std::ostream& ost, const List& list)
@@ -288,25 +275,12 @@ std::ostream& operator<< (std::ostream& ost, const List& list)
 
 unsigned long List::num_operations() const
 {
-    return mRep.num_operations();
-}
-
-void List::process(
-   std::function<void(uint32_t lower_limit, uint32_t upper_limit)> fn) const
-{
-    mRep.process(fn);
-}
-
-void List::process(
-    uint32_t left, uint32_t right,
-    std::function<void(uint32_t,uint32_t)> fn) const
-{
-    mRep.process(left, right, fn);
+    return NumList<uint32_t>::num_operations();
 }
 
 void List::verify() const throw (std::exception)
 {
-    mRep.verify();
+    NumList<uint32_t>::verify();
 }
 
 

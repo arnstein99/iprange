@@ -13,21 +13,27 @@ class numeric_range_error : public std::exception
     virtual const char* what() const noexcept;
 };
 
+template<typename BOUND> class NumList;
+
 // A dense interval.
 template<typename BOUND>
-class NumRange
+class NumRange : private std::pair<BOUND, BOUND>
 {
 public:
 
-    NumRange() = delete;
+    NumRange() noexcept;
     ~NumRange();
     NumRange(NumRange const& other) noexcept;
     NumRange& operator=(NumRange const& other) noexcept;
     NumRange(NumRange&& other) noexcept;
     NumRange& operator=(NumRange&& other) noexcept;
 
+    // The only way to access content
+    const std::pair<BOUND, BOUND>& get() const { return *this; }
+
     // Construct from lower and upper bounds. Correct ordering is checked.
     NumRange(BOUND lower, BOUND upper) throw (numeric_range_error);
+    NumRange(const std::pair<BOUND,BOUND>& other) throw (numeric_range_error);
 
     // Splitter-constructor. Note that the argument is NOT const.
     // Shortens the length of this interval and returns a new interval
@@ -35,14 +41,7 @@ public:
     // argument middle.
     NumRange(NumRange& nr, BOUND middle) throw (numeric_range_error);
 
-    // Report contents
-    BOUND lower_bound() const noexcept;
-    BOUND upper_bound() const noexcept;
-
-private:
-
-    BOUND mLower;
-    BOUND mUpper;
+    friend class NumList<BOUND>;
 
 }; // class NumRange
 
@@ -50,16 +49,19 @@ private:
 // that the intervals are always sorted, and there are never two adjacent or
 // overlapping intervals.
 template<typename BOUND>
-class NumList
+class NumList : private std::map<BOUND,BOUND>
 {
 public:
 
-    NumList();
+    NumList() noexcept;
     ~NumList();
-    NumList(NumList const& other);
-    NumList& operator=(NumList const& other);
-    NumList(NumList&& other);
-    NumList& operator=(NumList&& other);
+    NumList(NumList const& other) noexcept;
+    NumList& operator=(NumList const& other) noexcept;
+    NumList(NumList&& other) noexcept;
+    NumList& operator=(NumList&& other) noexcept;
+
+    // The only way to access content
+    const std::map<BOUND, BOUND>& get() const { return *this; }
 
     // Add an interval to the collection.
     void add (const NumRange<BOUND>& range) noexcept;
@@ -67,13 +69,6 @@ public:
     // Remove an interval from the collection. The interval need not be part of
     // the collection. This method handles overlaps, etc.
     void subtract (const NumRange<BOUND>& range) throw (std::exception);
-
-    // Apply a function to every interval in the collection, in sorted order.
-    void process(std::function<void(BOUND,BOUND)> fn) const;
-
-    // Same, but only for intervals that have intersection with [left, right]
-    void process(
-        BOUND left, BOUND right, std::function<void(BOUND,BOUND)> fn) const;
 
     // Report extreme values
     BOUND min() const throw (numeric_range_error);
@@ -97,7 +92,6 @@ private:
         BOUND new_upper)
 	    throw ();
 
-    std::map<BOUND,BOUND> mRep;
     unsigned long mNumOperations;
 
 }; // class NumList

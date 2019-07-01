@@ -47,20 +47,18 @@ std::pair<uint32_t /*start*/, int /*bits*/> to_cidr (
 //                 BOUND& result_lower, BOUND& result_upper)
 
 // An interval of IP addresses. Mostly used to translate to and from strings.
-class Range
+class Range : public NumRange<uint32_t>
 {
 public:
 
-    Range() = delete;
+    Range() noexcept;
     ~Range();
-    Range(Range const& other);
-    Range& operator=(Range const& other);
-    Range(Range&& other);
-    Range& operator=(Range&& other);
+    Range(Range const& other) noexcept;
+    Range& operator=(Range const& other) noexcept;
+    Range(Range&& other) noexcept;
+    Range& operator=(Range&& other) noexcept;
     Range(uint32_t lower, uint32_t upper) throw(ip_range_error);
     Range(const std::string& expr) throw(ip_domain_error, ip_range_error);
-    uint32_t lower_bound() const noexcept;
-    uint32_t upper_bound() const noexcept;
 
     // Splitter-constructor. 
     // Note that the first argument is NOT const.
@@ -68,26 +66,22 @@ public:
     // within the range of the first argument.
     Range(Range&, std::string& middle) throw (ip_range_error);
 
-private:
-
-    NumRange<uint32_t> mRep;
-
 }; // class Range
 
 // List of IP addresses. Maintained as a sorted list of non-overlapping,
 // non-adjacent intervals in standard form. That is, each interval can be
 // expressed as nn.nn.nn.nn/nn and the mask implied by /nn does not knock out
 // any bits in nn.nn.nn.nn.
-class List
+class List : public NumList<uint32_t>
 {
 public:
 
-    List();
+    List() noexcept;
     ~List();
-    List(List const& other);
-    List& operator=(List const& other);
-    List(List&& other);
-    List& operator=(List&& other);
+    List(List const& other) noexcept;
+    List& operator=(List const& other) noexcept;
+    List(List&& other) noexcept;
+    List& operator=(List&& other) noexcept;
 
     // Add an interval of IP addresses.
     void add (const Range&) noexcept;
@@ -107,25 +101,13 @@ public:
     // performed since construction.
     unsigned long num_operations() const;
 
-    // Apply a function to every interval in list, in sorted order.
-    // Useful for testing.
-    void process(
-       std::function<void(uint32_t lower_limit, uint32_t upper_limit)> fn)
-    const;
-
-    // Same, but only for intervals that have intersection with [left, right]
-    void process(
-        uint32_t left, uint32_t right,
-	std::function<void(uint32_t,uint32_t)> fn) const;
-
     // For debugging
     void verify() const throw (std::exception);
 
 private:
 
-    NumList<uint32_t> mRep;
-
 }; // class List
+
 std::ostream& operator<< (std::ostream&, const List&);
 
 } // namespace IPAR

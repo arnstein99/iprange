@@ -19,9 +19,9 @@ using namespace std;
 int main (int argc, char* argv[])
 {
     enum Style {
-        standard,
-	dashes,
-	hex
+        Sstandard,
+	Sdashes,
+	Shex
     };
     Style style;
 
@@ -29,20 +29,20 @@ int main (int argc, char* argv[])
     switch (argc)
     {
     case 1:
-	style = Style::standard;
+	style = Sstandard;
         break;
     case 2:
         if (strcmp (argv[1], "-standard") == 0)
 	{
-	    style = Style::standard;
+	    style = Sstandard;
 	}
         else if (strcmp (argv[1], "-dashes") == 0)
 	{
-	    style = Style::dashes;
+	    style = Sdashes;
 	}
         else if (strcmp (argv[1], "-hex") == 0)
 	{
-	    style = Style::hex;
+	    style = Shex;
 	}
 	else
 	{
@@ -62,23 +62,23 @@ int main (int argc, char* argv[])
 
     // Report
     cerr << iplist.num_operations() << " operations applied" << endl;
-    if (style == Style::hex)
+    if (style == Shex)
     {
 	iplist.verify();
 	cout << hex << setfill('0');
 	cerr << hex << setfill('0');
-        iplist.process (
-	    [] (uint32_t lower, uint32_t upper) {
-		while (lower <= upper)
-		{
-		    cout << setw(8) << lower++ << endl;
-		}
+	for (auto pr : iplist.get())
+	{
+	    uint32_t lower = pr.first;
+	    while (lower <= pr.second)
+	    {
+		cout << setw(8) << lower++ << endl;
 	    }
-	);
+	}
     }
     else
     {
-        if (style == Style::dashes)
+        if (style == Sdashes)
 	{
 	    // TODO: write a manipulator for iplist.
 	    iplist.print(cout, true);

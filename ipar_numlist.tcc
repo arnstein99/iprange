@@ -62,54 +62,62 @@ throw (std::exception)
 
 } // namespace anonymous
 
+
+const char* numeric_range_error::what() const noexcept
+{
+    return "Could not process numeric range";
+}
+
+
 ///////////////////////////
 // NumRange implementation
 ///////////////////////////
 
 template<typename BOUND>
+NumRange<BOUND>::NumRange() noexcept
+ : std::pair<BOUND, BOUND>()
+{
+}
+
+template<typename BOUND>
 NumRange<BOUND>::~NumRange()
 {
 }
+
 template<typename BOUND>
 NumRange<BOUND>::NumRange(NumRange<BOUND> const& other) noexcept
- : mLower(other.mLower), mUpper(other.mUpper)
+ : std::pair<BOUND, BOUND>(other)
 {
 }
+template<typename BOUND>
+NumRange<BOUND>::NumRange(const std::pair<BOUND,BOUND>& other)
+    throw (numeric_range_error)
+ : std::pair<BOUND, BOUND>(other)
+{
+}
+
 template<typename BOUND>
 NumRange<BOUND>& NumRange<BOUND>::operator=(NumRange<BOUND> const& other)
     noexcept
 {
-    if (&other != this)
-    {
-        mLower = other.mLower;
-        mUpper = other.mUpper;
-    }
+    std::pair<BOUND, BOUND>::operator=(other);
     return *this;
 }
 template<typename BOUND>
 NumRange<BOUND>::NumRange(NumRange<BOUND>&& other) noexcept
- : mLower(other.mLower), mUpper(other.mUpper)
+ : std::pair<BOUND, BOUND>(other)
 {
 }
 template<typename BOUND>
 NumRange<BOUND>& NumRange<BOUND>::operator=(NumRange<BOUND>&& other) noexcept
 {
-    if (&other != this)
-    {
-        mLower = other.mLower;
-        mUpper = other.mUpper;
-    }
+    std::pair<BOUND, BOUND>::operator=(other);
     return *this;
-}
-
-const char* numeric_range_error::what() const noexcept
-{
-    return "Could not parse numeric range";
 }
 
 template<typename BOUND>
 NumRange<BOUND>::NumRange(BOUND lower, BOUND upper) throw (numeric_range_error)
- : mLower(lower), mUpper(upper)
+ : std::pair<BOUND, BOUND>(lower, upper)
 {
     if (lower > upper) throw numeric_range_error();
 }
@@ -117,30 +125,25 @@ NumRange<BOUND>::NumRange(BOUND lower, BOUND upper) throw (numeric_range_error)
 template<typename BOUND> 
 NumRange<BOUND>::NumRange(NumRange& nr, BOUND middle)
    throw (numeric_range_error)
- : mLower(nr.lower), mUpper(middle)
+ : std::pair<BOUND, BOUND>(nr.first, middle)
 {
-    static const BOUND bmax = std::numeric_limits<BOUND>::max();
+    static BOUND bmax = std::numeric_limits<BOUND>::max();
     if (middle == bmax) throw numeric_range_error();
 
-    if (nr.mLower > middle) throw numeric_range_error();
+    if (nr.first > middle) throw numeric_range_error();
 
     nr.mLower = ++middle;
-    if (nr.Lower > nr.mUpper) throw numeric_range_error();
+    if (nr.first > nr.second) throw numeric_range_error();
 }
 
-template<typename BOUND> 
-BOUND NumRange<BOUND>::lower_bound() const noexcept { return mLower; }
-
-template<typename BOUND> 
-BOUND NumRange<BOUND>::upper_bound() const noexcept { return mUpper; }
 
 //////////////////////////
 // NumList implementation
 //////////////////////////
 
 template<typename BOUND>
-NumList<BOUND>::NumList()
- : mRep{}, mNumOperations(0)
+NumList<BOUND>::NumList() noexcept
+ : std::map<BOUND,BOUND>(), mNumOperations(0)
 {
 }
 
@@ -150,55 +153,46 @@ NumList<BOUND>::~NumList()
 }
 
 template<typename BOUND>
-NumList<BOUND>::NumList(NumList<BOUND> const& other)
- : mRep(other.mRep), mNumOperations(0)
+NumList<BOUND>::NumList(const NumList<BOUND>& other) noexcept
+ : std::map<BOUND,BOUND>(other), mNumOperations(0)
 {
 }
 
 template<typename BOUND>
-NumList<BOUND>& NumList<BOUND>::operator=(NumList<BOUND> const& other)
+NumList<BOUND>::NumList(NumList<BOUND>&& other) noexcept
+ : std::map<BOUND,BOUND>(other), mNumOperations(0)
 {
-    if (&other != this)
-    {
-        mRep = other.mRep;
-	mNumOperations = 0;
-    }
+}
+
+template<typename BOUND>
+NumList<BOUND>& NumList<BOUND>::operator=(const NumList<BOUND>& other) noexcept
+{
+    std::map<BOUND,BOUND>::operator=(other);
     return *this;
 }
 
 template<typename BOUND>
-NumList<BOUND>::NumList(NumList<BOUND>&& other)
- : mRep(other.mRep), mNumOperations(0)
+NumList<BOUND>& NumList<BOUND>::operator=(NumList<BOUND>&& other) noexcept
 {
-}
-
-template<typename BOUND>
-NumList<BOUND>& NumList<BOUND>::operator=(NumList<BOUND>&& other)
-{
-    if (&other != this)
-    {
-        mRep = other.mRep;
-	mNumOperations = 0;
-    }
+    std::map<BOUND,BOUND>::operator=(other);
     return *this;
 }
-
 
 template<typename BOUND>
 void NumList<BOUND>::add (const NumRange<BOUND>& range) noexcept
 {
-    BOUND new_key   = range.lower_bound();
-    BOUND new_upper = range.upper_bound();
+    BOUND new_key   = range.first;
+    BOUND new_upper = range.second;
 
     // Dispensing with a special case simplifies matters
-    if (mRep.empty())
+    if (std::map<BOUND,BOUND>::empty())
     {
-        mRep[new_key] = new_upper;
+        (*this)[new_key] = new_upper;
 	return;
     }
 
     // Find a home for the input element
-    auto pr = mRep.insert(std::make_pair(new_key, new_upper));
+    auto pr = std::map<BOUND,BOUND>::insert(std::make_pair(new_key, new_upper));
     auto base_iter = pr.first;
     auto check_iter = base_iter;
     if (pr.second)
@@ -206,7 +200,7 @@ void NumList<BOUND>::add (const NumRange<BOUND>& range) noexcept
 	// No existing interval starts with this lower bound,
 	// so we made one.
 
-	if (base_iter == mRep.begin())
+	if (base_iter == this->cbegin())
 	{
 	    // First check will be between new element and its next in map
 	    ++check_iter;
@@ -222,7 +216,7 @@ void NumList<BOUND>::add (const NumRange<BOUND>& range) noexcept
 		    prev_iter->second = base_iter->second;
 
 		// The new element is now completely redundant
-		base_iter = mRep.erase (base_iter);
+		base_iter = std::map<BOUND,BOUND>::erase (base_iter);
 		--base_iter; // Points back to prev_iter
 
 		++mNumOperations;
@@ -243,7 +237,7 @@ void NumList<BOUND>::add (const NumRange<BOUND>& range) noexcept
     }
 
     // Now take care of adjacent or overlapping entries
-    while (check_iter != mRep.end())
+    while (check_iter != this->cend())
     {
         if (bad_order (base_iter->second, check_iter->first))
 	{
@@ -252,7 +246,7 @@ void NumList<BOUND>::add (const NumRange<BOUND>& range) noexcept
 		base_iter->second = check_iter->second;
 	    
 	    // The old element is now completely redundant, as before.
-	    check_iter = mRep.erase(check_iter);
+	    check_iter = std::map<BOUND,BOUND>::erase(check_iter);
 	    base_iter = std::prev(check_iter);
 
 	    ++mNumOperations;
@@ -270,43 +264,23 @@ void NumList<BOUND>::subtract (const NumRange<BOUND>& range)
     throw (std::exception)
 {
     // Eliminate a special case
-    if (mRep.empty()) return;
+    if (std::map<BOUND,BOUND>::empty()) return;
 
-    BOUND new_key   = range.lower_bound();
-    BOUND new_upper = range.upper_bound();
+    BOUND new_key   = range.first;
+    BOUND new_upper = range.second;
 
     // Find a location for the input element
-    auto check_iter = mRep.lower_bound(new_key);
+    auto check_iter = std::map<BOUND,BOUND>::lower_bound(new_key);
     // if (new_key >= check_iter->first) ...
-    if (check_iter != mRep.begin()) --check_iter;
+    if (check_iter != this->cbegin()) --check_iter;
 
     // ... and this can only happen once.
     if (new_key > check_iter->first)
 	subtract_sub1(check_iter, new_key, new_upper);
 
     // Take care of adjacent or overlapping entries
-    while (check_iter != mRep.end())
+    while (check_iter != this->cend())
 	subtract_sub2(check_iter, new_upper);
-}
-
-template<typename BOUND> 
-void NumList<BOUND>::process(std::function<void(BOUND,BOUND)> fn) const
-{
-    for (auto member : mRep)
-    {
-	fn(member.first, member.second);
-    }
-}
-
-template<typename BOUND> 
-void NumList<BOUND>::process(
-    BOUND left, BOUND right, std::function<void(BOUND,BOUND)> fn) const
-{
-    for (auto incr = mRep.lower_bound(left) ; incr != mRep.end() ; ++incr)
-    {
-	if (incr->first > right) break;
-	fn(incr->first, incr->second);
-    }
 }
 
 template<typename BOUND> 
@@ -318,28 +292,28 @@ unsigned long NumList<BOUND>::num_operations() const
 template<typename BOUND> 
 BOUND NumList<BOUND>::min() const throw (numeric_range_error)
 {
-    if (mRep.empty()) throw (numeric_range_error());
-    return mRep.begin()->first;
+    if (std::map<BOUND,BOUND>::empty()) throw (numeric_range_error());
+    return this->cbegin()->first;
 }
 
 template<typename BOUND> 
 BOUND NumList<BOUND>::max() const throw (numeric_range_error)
 {
-    if (mRep.empty()) throw (numeric_range_error());
-    return mRep.rbegin()->second;
+    if (std::map<BOUND,BOUND>::empty()) throw (numeric_range_error());
+    return this->crbegin()->second;
 }
 
 template<typename BOUND> 
 void NumList<BOUND>::verify() const throw (std::exception)
 {
-    auto iter = mRep.begin();
-    if (iter == mRep.end()) return;
+    auto iter = this->cbegin();
+    if (iter == this->cend()) return;
     if (iter->second < iter->first)
     {
 	throw (std::exception());
     }
     BOUND prev = iter->second;
-    for (++iter ; iter != mRep.end() ; ++iter)
+    for (++iter ; iter != this->cend() ; ++iter)
     {
 	if (iter->second < iter->first)
 	{
@@ -385,7 +359,7 @@ void NumList<BOUND>::subtract_sub1(
 	replacement_upper = check_iter->second;
 	check_iter->second = new_key; --(check_iter->second);
 	auto pr = std::make_pair(replacement_lower, replacement_upper);
-	check_iter = mRep.insert(std::next(check_iter), pr);
+	check_iter = std::map<BOUND,BOUND>::insert(std::next(check_iter), pr);
 	++check_iter;
 	++mNumOperations;
     }
@@ -410,7 +384,7 @@ void NumList<BOUND>::subtract_sub2(
     // This method is only valid
     // if (new_key <= check_iter->first)
 
-    if (check_iter == mRep.end()) throw (std::exception());
+    if (check_iter == this->cend()) throw (std::exception());
 
     // this is actually the most common case
     if (check_iter->first > new_upper)
@@ -420,7 +394,7 @@ void NumList<BOUND>::subtract_sub2(
 	//           result:                ********** 
 
 	// Indicate completion
-	check_iter = mRep.end();
+	check_iter = std::map<BOUND,BOUND>::end();
 	return;
     }
 
@@ -434,9 +408,9 @@ void NumList<BOUND>::subtract_sub2(
 	//           result:           *****
 	replacement_lower = new_upper; ++replacement_lower;
 	replacement_upper = check_iter->second;
-	check_iter = mRep.erase(check_iter);
+	check_iter = std::map<BOUND,BOUND>::erase(check_iter);
 	auto pr = std::make_pair(replacement_lower, replacement_upper);
-	check_iter = mRep.insert(check_iter, pr);
+	check_iter = std::map<BOUND,BOUND>::insert(check_iter, pr);
 	++check_iter;
 	++mNumOperations;
     }
@@ -446,10 +420,11 @@ void NumList<BOUND>::subtract_sub2(
 	//            minus: ***************
 	//            minus: *******************
 	//           result:                 
-	check_iter = mRep.erase(check_iter);
+	check_iter = std::map<BOUND,BOUND>::erase(check_iter);
 	++mNumOperations;
     }
 }
+
 
 ///////////////////////////////////////
 // Convenience function implementation
