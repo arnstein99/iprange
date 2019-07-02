@@ -142,8 +142,9 @@ GapInfo max_coverage (
 	    my_max = test_val;
     }
 
-    for (auto iter = iplist.get().lower_bound(lower_bound) ; 
-         iter != iplist.get().cend() ; ++iter)
+    auto& access = iplist.get();
+    for (auto iter = access.lower_bound(lower_bound) ; iter != access.cend() ;
+         ++iter)
     {
 	// Skip own self
 	if (iter->first == lower_bound) continue;
@@ -170,8 +171,9 @@ std::pair<uint32_t,double>  coverage (
 {
     std::pair<uint32_t,double> cov {0, 0.0};
 
-    for (auto iter = iplist.get().lower_bound(lower_bound) ; 
-         iter != iplist.get().cend() ; ++iter)
+    auto& access = iplist.get();
+    for (auto iter = access.lower_bound(lower_bound) ; iter != access.cend() ;
+         ++iter)
     {
 	uint32_t inter_lower_bound, inter_upper_bound;
 	if (!IPAR::intersect (lower_bound, upper_bound,

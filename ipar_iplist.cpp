@@ -215,9 +215,10 @@ void List::subtract(const Range& range) throw (std::exception)
 
 void List::print(std::ostream& ost, bool dashes) const
 {
+    auto& access = get();
     if (dashes)
     {
-	for (auto iter = get().cbegin() ; iter != get().cend() ; ++iter)
+	for (auto iter = access.cbegin() ; iter != access.cend() ; ++iter)
 	{
 	    uint32_t lower = iter->first;
 	    ost << int_to_quad(lower);
@@ -228,7 +229,7 @@ void List::print(std::ostream& ost, bool dashes) const
     }
     else
     {
-	for (auto iter = get().cbegin() ; iter != get().cend() ; ++iter)
+	for (auto iter = access.cbegin() ; iter != access.cend() ; ++iter)
 	{
 	    uint32_t lower = iter->first;
 	    while (lower <= iter->second)
