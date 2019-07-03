@@ -28,6 +28,11 @@ Transforms input into a sorted and standardized form. The result is written to
 standard output in one of three possible formats. It is mostly used to sort
 and remove redundancies.
 
+### Program ipar_interactive
+
+Similar to program ipar_read, but processes input one line at a time. This is
+intended to be used interactively.
+
 ### Program ipar_intersect
 
 Accepts an arbitrary number of command line arguments, each of which is a file

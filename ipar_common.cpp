@@ -14,11 +14,6 @@ TextReader::TextReader(std::istream& ist)
 {
 }
 
-TextReader::~TextReader()
-{
-    delete mSst;
-}
-
 TextReader& TextReader::operator>> (std::string& word)
 {
     while (mFileOk)
@@ -26,12 +21,11 @@ TextReader& TextReader::operator>> (std::string& word)
 	if (!mLineOk)
 	{
 	    if (!(mFileOk = bool(getline(mIst, mLine)))) break;
-	    delete mSst;
-	    mSst = new std::istringstream(mLine);
+	    mSst = std::istringstream(mLine);
 	    ++mLineNo;
 	}
 
-	if (!(mLineOk = bool(*mSst >> word))) continue;
+	if (!(mLineOk = bool(mSst >> word))) continue;
 
 	// Ignore comments to end of line
 	if (word[0] == '#')

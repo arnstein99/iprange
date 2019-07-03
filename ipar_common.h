@@ -21,7 +21,7 @@ public:
 
     // The automatic methods
     TextReader() = delete;
-    ~TextReader();
+    ~TextReader() = default;
     TextReader(TextReader const& other) = delete;
     TextReader& operator=(TextReader const& other) = delete;
     TextReader(TextReader&& other) = default;
@@ -36,7 +36,7 @@ public:
 private:
 
     std::istream& mIst;
-    std::istringstream* mSst;
+    std::istringstream mSst;
     std::string mLine;
     unsigned int mLineNo;
     bool mLineOk;

@@ -10,10 +10,12 @@ CXXFLAGS += \
     -Wdouble-promotion -Wshadow -Wformat=2 \
     -Wold-style-cast -Wuseless-cast
 
-PROGRAMS = ipar_read ipar_subtract ipar_expand ipar_gap_analyzer ipar_intersect
+PROGRAMS = ipar_read ipar_subtract ipar_expand ipar_gap_analyzer \
+    ipar_intersect ipar_interactive
 SOURCES = \
     ipar_read.cpp ipar_subtract.cpp ipar_expand.cpp ipar_iplist.cpp \
-    ipar_gap_analyzer.cpp ipar_common.cpp ipar_intersect.cpp
+    ipar_gap_analyzer.cpp ipar_common.cpp ipar_intersect.cpp \
+    ipar_interactive.cpp
 LIB_OBJECTS = ipar_iplist.o ipar_common.o
 
 Q_ = @

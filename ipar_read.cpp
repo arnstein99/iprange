@@ -66,7 +66,6 @@ int main (int argc, char* argv[])
     {
 	iplist.verify();
 	cout << hex << setfill('0');
-	cerr << hex << setfill('0');
 	for (auto pr : iplist.get())
 	{
 	    uint32_t lower = pr.first;
