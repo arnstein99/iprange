@@ -1,10 +1,10 @@
 #
 
-# Test content of file1 minus content of file2
+# Test reading in a file
 
 if [ $# -ne 1 ]
 then
-    echo "Usage: add_test.sh input_file " >&2
+    echo "Usage: read_test.sh input_file " >&2
     exit 1
 fi
 

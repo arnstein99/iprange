@@ -7,11 +7,12 @@ Just type `make`. This project uses C++14 and the bash shell. C++11 suffices.
 
 ## Programs
 
-These programs read from standard input and write to standard output. The input
-format is text. Comments begin with a hash mark (#) and continue to
-end-of-line.  Apart from comments, the input consists of a sequence of ranges
-of IPV4 addresses. These ranges are separated by spaces and/or end-of-line. A
-range may be in one of three forms:
+These programs read from standard input and write to standard
+output. The input format is text. Within an input, a comment starts
+with a space or newline follwed by a hash mark (#). The comment
+continues to end-of-line.  Apart from comments, the input consists
+of a sequence of ranges of IPV4 addresses. These ranges are separated
+by spaces and/or end-of-line. A range may be in one of three forms:
 
 * A single address `nn.nn.nn.nn`
 * A range of addresses with a dash `nn.nn.nn.nn-nn.nn.nn.nn`. Note that spaces
@@ -48,6 +49,10 @@ portions of the content that are "almost dense." Still under development.
 
 Unlike the other programs, this one does no sorting and does not remove
 redundancies. It is mainly useful for testing other programs.
+
+### Script read_test.sh
+
+A test script for program ipar_read.
 
 ### Script intersect_test.sh
 
