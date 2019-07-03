@@ -69,9 +69,9 @@ public:
 }; // class Range
 
 // List of IP addresses. Maintained as a sorted list of non-overlapping,
-// non-adjacent intervals in standard form. That is, each interval can be
-// expressed as nn.nn.nn.nn/nn and the mask implied by /nn does not knock out
-// any bits in nn.nn.nn.nn.
+// non-adjacent intervals in CIDR form. That is, each interval can be
+// expressed as nn.nn.nn.nn/mm and the least significant (32-mm) bits of
+// nn.nn.nn.nn are zero.
 class List : public NumList<uint32_t>
 {
 public:

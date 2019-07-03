@@ -101,7 +101,7 @@ private:
 // Convenience functions
 
 // Compute the intersection of two intervals. If the return value is false, the
-// intersection is the empty set. In this case, the result argumentss are
+// intersection is the empty set. In this case, the result arguments are
 // undefined.
 // All results are undefined if (a_lower > a_upper) or (b_lower > b_upper).
 template<typename BOUND>
@@ -114,7 +114,7 @@ bool intersect (BOUND a_lower, BOUND a_upper,
 	 if (a_upper < b_lower) return false;
 	 result_lower = b_lower;
      }
-     else // (a_lower > b_loser)
+     else // (a_lower > b_lower)
      {
 	 if (b_upper < a_lower) return false;
 	 result_lower = a_lower;

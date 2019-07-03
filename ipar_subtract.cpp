@@ -4,7 +4,7 @@
 // Opens other lists of IP addresses from specified files.
 // Logically removes everything in the other lists from the first list.
 // Writes out the result to standard output.
-// None of the inputs have to be sorted and they need not be in standard form.
+// None of the inputs have to be sorted.
 
 #include <iostream>
 #include <fstream>

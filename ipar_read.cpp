@@ -19,7 +19,7 @@ using namespace std;
 int main (int argc, char* argv[])
 {
     enum Style {
-        Sstandard,
+        Scidr,
 	Sdashes,
 	Shex
     };
@@ -29,12 +29,12 @@ int main (int argc, char* argv[])
     switch (argc)
     {
     case 1:
-	style = Sstandard;
+	style = Scidr;
         break;
     case 2:
-        if (strcmp (argv[1], "-standard") == 0)
+        if (strcmp (argv[1], "-cidr") == 0)
 	{
-	    style = Sstandard;
+	    style = Scidr;
 	}
         else if (strcmp (argv[1], "-dashes") == 0)
 	{
@@ -46,13 +46,13 @@ int main (int argc, char* argv[])
 	}
 	else
 	{
-	    cerr << "Usage: ipar_read [-standard|-dashes|-hex]" << endl;
+	    cerr << "Usage: ipar_read [-cidr|-dashes|-hex]" << endl;
 	    cerr << "(no other arguments)" << endl;
 	    return 1;
 	}
         break;
     default:
-        cerr << "Usage: ipar_read [-standard|-dashes|-hex]" << endl;
+        cerr << "Usage: ipar_read [-cidr|-dashes|-hex]" << endl;
 	cerr << "(no other arguments)" << endl;
 	return 1;
     }
@@ -83,7 +83,7 @@ int main (int argc, char* argv[])
 	    // TODO: write a manipulator for iplist.
 	    iplist.print(cout, true);
 	}
-	else // Standard format
+	else // CIDR format
 	{
 	    cout << iplist;
 	}
