@@ -21,7 +21,7 @@ TextReader& TextReader::operator>> (std::string& word)
 	if (!mLineOk)
 	{
 	    if (!(mFileOk = bool(getline(mIst, mLine)))) break;
-	    mSst = std::istringstream(mLine);
+	    mSst.str(mLine);
 	    ++mLineNo;
 	}
 

@@ -66,7 +66,7 @@ int main (int argc, char* argv[])
     {
 	// Process one line of input
 	string word;
-	auto sstr = istringstream(line);
+	istringstream sstr(line);
 	IPAR::List iplist;
 	while (sstr >> word)
 	{
