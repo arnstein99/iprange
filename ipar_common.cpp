@@ -71,12 +71,12 @@ int common_read (std::istream& ist, List& iplist) throw()
     // Loop over lines of input
     IPAR::TextReader reader(ist);
     std::string word;
+    IPAR::Range iprange;
     while (reader >> word)
     {
 	// Assume the word is a range of IPv4 addresses
 	try {
-	    IPAR::Range iprange(word);
-	    iplist.add(iprange);
+	    iprange = IPAR::Range(word);
 	}
 	catch (const std::exception& ex) {
 	    std::cerr << "ERROR: " << ex.what() << " at line "
@@ -85,6 +85,7 @@ int common_read (std::istream& ist, List& iplist) throw()
 	    std::cerr << "Last input was \"" << word << "\"" << std::endl;
 	    return 1;
 	}
+        iplist.add(iprange);
     }
 
     return 0;

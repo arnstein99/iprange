@@ -34,12 +34,12 @@ int main (int argc, char* argv[])
 
 	// Loop over words in the subtract file
 	IPAR::TextReader reader2(ist);
+        IPAR::Range iprange;
 	while (reader2 >> word)
 	{
 	    // Assume the word is a range of IPv4 addresses
 	    try {
-		IPAR::Range iprange(word);
-		mainlist.subtract(iprange);
+		iprange = IPAR::Range(word);
 	    }
 	    catch (const exception& ex) {
 		cerr << "ERROR: " << ex.what() << " at line "
@@ -49,6 +49,7 @@ int main (int argc, char* argv[])
 		cerr << "Last input was \"" << word << "\"" << endl;
 		return 1;
 	    }
+            mainlist.subtract(iprange);
 	} // End loop overwords in the subtract file
     } // End loop over input files to subtract
 

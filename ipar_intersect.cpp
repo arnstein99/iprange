@@ -41,12 +41,12 @@ int main (int argc, char* argv[])
 
 	// Loop over words in the intersect file
 	IPAR::TextReader reader2(ist);
+        IPAR::Range iprange;
 	while (reader2 >> word)
 	{
 	    // Assume the word is a range of IPv4 addresses
 	    try {
-		IPAR::Range iprange(word);
-		complem.subtract(iprange);
+		iprange = IPAR::Range(word);
 	    }
 	    catch (const exception& ex) {
 		cerr << "ERROR: " << ex.what() << " at line "
@@ -56,6 +56,7 @@ int main (int argc, char* argv[])
 		cerr << "Last input was \"" << word << "\"" << endl;
 		return 1;
 	    }
+            complem.subtract(iprange);
 	} // End loop over words in the intersect file
     } // End loop over input files to intersect
 
