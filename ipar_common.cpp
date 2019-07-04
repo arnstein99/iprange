@@ -1,4 +1,5 @@
 #include <exception>
+#include <iostream>
 #include <istream>
 #include "ipar_common.h"
 
@@ -55,6 +56,22 @@ unsigned int TextReader::line_no() const
 {
     return mLineNo;
 }
+
+
+//////////////////////////////////////
+// Implementation of FileReader class
+//////////////////////////////////////
+
+FileReader::FileReader(const std::string& filename)
+ : mIfs(filename, std::ifstream::in), mTr(mIfs)
+{
+    if (!mIfs)
+    {
+        std::cerr << "ERROR: could not open input file \"" << filename
+                  << "\" for reading" << std::endl;
+    }
+}
+
 
 ///////////////////////////////////////////
 // Implementation of stand-alone functions

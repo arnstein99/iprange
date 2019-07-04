@@ -5,7 +5,10 @@
 #ifndef IPAR_COMMON_H_ // {
 #define IPAR_COMMON_H_
 
+#include <fstream>
 #include <istream>
+#include <sstream>
+#include <string>
 #include "ipar_iplist.h"
 
 namespace IPAR {
@@ -43,6 +46,31 @@ private:
     bool mFileOk;
 
 }; // class TextReader
+
+class FileReader
+{
+public:
+
+    // The automatic methods
+    FileReader() = delete;
+    ~FileReader() = default;
+    FileReader(FileReader const& other) = delete;
+    FileReader& operator=(FileReader const& other) = delete;
+    FileReader(FileReader&& other) = default;
+    FileReader& operator=(FileReader&& other) = default;
+
+    FileReader(const std::string& filename);
+    FileReader& operator>> (std::string& word) { mTr >> word; return *this; }
+    operator bool() const { return bool(mTr); }
+    std::string current_line() const { return mTr.current_line(); }
+    unsigned int line_no() const { return mTr.line_no(); }
+
+private:
+
+    std::ifstream mIfs;
+    TextReader mTr;
+
+};
 
 // This method does a batch-read of interval specifiers from an
 // istream into an IPAR list.

@@ -6,8 +6,6 @@
 // Writes out the result to standard output.
 // None of the inputs have to be sorted.
 
-#include <iostream>
-#include <fstream>
 #include <string>
 using namespace std;
 #include "ipar_iplist.h"
@@ -16,7 +14,6 @@ using namespace std;
 int main (int argc, char* argv[])
 {
     IPAR::List mainlist;
-    string word;
 
     // Loop over lines of input
     if (int retval = IPAR::common_read (cin, mainlist) != 0) return retval;
@@ -24,20 +21,15 @@ int main (int argc, char* argv[])
     // Loop over input files to subtract
     for (int iArg = 1 ; iArg < argc ; ++iArg)
     {
-	ifstream ist ((argv[iArg]), ifstream::in);
-	if (ist.fail())
-	{
-	    cerr << "ERROR: could not open subtract file \"" << argv[iArg]
-		 << "\" for reading" << endl;
-	    return 1;
-	}
+	IPAR::FileReader reader2(argv[iArg]);
+	if (!reader2) return 1;
 
 	// Loop over words in the subtract file
-	IPAR::TextReader reader2(ist);
-        IPAR::Range iprange;
+        string word;
 	while (reader2 >> word)
 	{
 	    // Assume the word is a range of IPv4 addresses
+            IPAR::Range iprange;
 	    try {
 		iprange = IPAR::Range(word);
 	    }

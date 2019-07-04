@@ -1,5 +1,5 @@
-// Program ipar_read
-// ----------------
+// Program ipar_interactive
+// ------------------------
 // Reads IP address ranges from standard input.
 // Performs the following, until EOF on input:
 //  * Prompt for input (> ).
@@ -49,13 +49,13 @@ int main (int argc, char* argv[])
 	}
 	else
 	{
-	    cerr << "Usage: ipar_read [-cidr|-dashes|-hex]" << endl;
+	    cerr << "Usage: ipar_interactive [-cidr|-dashes|-hex]" << endl;
 	    cerr << "(no other arguments)" << endl;
 	    return 1;
 	}
         break;
     default:
-        cerr << "Usage: ipar_read [-cidr|-dashes|-hex]" << endl;
+        cerr << "Usage: ipar_interactive [-cidr|-dashes|-hex]" << endl;
 	cerr << "(no other arguments)" << endl;
 	return 1;
     }
