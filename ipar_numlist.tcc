@@ -234,7 +234,7 @@ void NumList<BOUND,BMAX>::add (const NumRange<BOUND,BMAX>& range)
     else
     {
 	// Found existing element, expand if if necessary
-        if (bad_order (base_iter->second, new_upper, BMAX))
+        if (bad_order (new_upper, base_iter->second, BMAX))
 	    base_iter->second = new_upper;
 
 	// Begin checking right after existing element

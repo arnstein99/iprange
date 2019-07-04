@@ -23,6 +23,7 @@ TextReader& TextReader::operator>> (std::string& word)
 	{
 	    if (!(mFileOk = bool(getline(mIst, mLine)))) break;
 	    mSst.str(mLine);
+	    mSst.clear();
 	    ++mLineNo;
 	}
 
