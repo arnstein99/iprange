@@ -12,5 +12,5 @@ fi
 ./ipar_read < "$1" > test_result.txt
 
 diff \
-    <(./ipar_expand < "$1" | sort | uniq) \
-    <(./ipar_expand < test_result.txt)
+    <(./ipar_expand -hex < "$1" | sort | uniq) \
+    <(./ipar_expand -hex < test_result.txt)

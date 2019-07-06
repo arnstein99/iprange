@@ -12,19 +12,32 @@ using namespace std;
 #include "ipar_iplist.h"
 #include "ipar_common.h"
 
-int main (int argc, char* /*argv*/[])
+int main (int argc, char* argv[])
 {
-    // No arguments allowed
-    if (argc != 1)
+    // Process arguments
+    IPAR::OutputStyle style;
+    switch (argc)
     {
-        cerr << "Usage: ipar_expand" << endl;
-	cerr << "(no arguments)" << endl;
+    case 1:
+	style = IPAR::Scidr;
+        break;
+    case 2:
+        style = IPAR::o_style(argv[1]);
+	if (style == IPAR::Sunknown)
+	{
+	    cerr << "Usage: ipar_expand [-cidr|-dashes|-hex]" << endl;
+	    cerr << "(no other arguments)" << endl;
+	    return 1;
+	}
+        break;
+    default:
+        cerr << "Usage: ipar_expand [-cidr|-dashes|-hex]" << endl;
+	cerr << "(no other arguments)" << endl;
 	return 1;
     }
 
-    // Choose hex output
-    cout << hex << setfill('0');
-    cerr << hex << setfill('0');
+    // Choose hex output if necessary
+    if (style == IPAR::Shex) cout << hex << setfill('0');
 
     // Loop over lines of input
     IPAR::TextReader reader(cin);
@@ -37,9 +50,7 @@ int main (int argc, char* /*argv*/[])
 	    iprange = IPAR::Range(word);
 	}
 	catch (const exception& ex) {
-	    cerr << "ERROR: " << ex.what() << " at line " << reader.line_no()
-		 << " of input: " << endl;
-	    cerr << reader.current_line() << endl;
+	    cerr << "ERROR: " << ex.what() << endl;
 	    cerr << "Last input was \"" << word << "\"" << endl;
 	    return 1;
 	}
@@ -48,7 +59,10 @@ int main (int argc, char* /*argv*/[])
 	auto upper = iprange.get().second;
 	while (lower <= upper)
 	{
-	    cout << setw(8) << lower++ << endl;
+	    if (style == IPAR::Shex)
+		cout << setw(8) << lower++ << endl;
+	    else
+		cout << IPAR::int_to_quad(lower++) << endl;
 	}
     }
 

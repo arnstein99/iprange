@@ -13,6 +13,15 @@
 
 namespace IPAR {
 
+// Handle user request for output format
+enum OutputStyle {
+    Sunknown,
+    Scidr,
+    Sdashes,
+    Shex
+};
+OutputStyle o_style (const std::string& arg);
+
 // This class handles text input in a common style for the IPAR programs:
 //  * All text from character # to end of line is ignored.
 //  * Text is broken down into a stream of words, delimited by spaces.

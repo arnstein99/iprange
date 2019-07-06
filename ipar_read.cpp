@@ -18,33 +18,16 @@ using namespace std;
 
 int main (int argc, char* argv[])
 {
-    enum Style {
-        Scidr,
-	Sdashes,
-	Shex
-    };
-    Style style;
-
     // Process arguments
+    IPAR::OutputStyle style;
     switch (argc)
     {
     case 1:
-	style = Scidr;
+	style = IPAR::Scidr;
         break;
     case 2:
-        if (strcmp (argv[1], "-cidr") == 0)
-	{
-	    style = Scidr;
-	}
-        else if (strcmp (argv[1], "-dashes") == 0)
-	{
-	    style = Sdashes;
-	}
-        else if (strcmp (argv[1], "-hex") == 0)
-	{
-	    style = Shex;
-	}
-	else
+        style = IPAR::o_style(argv[1]);
+	if (style == IPAR::Sunknown)
 	{
 	    cerr << "Usage: ipar_read [-cidr|-dashes|-hex]" << endl;
 	    cerr << "(no other arguments)" << endl;
@@ -62,7 +45,7 @@ int main (int argc, char* argv[])
 
     // Report
     cerr << iplist.num_operations() << " operations applied" << endl;
-    if (style == Shex)
+    if (style == IPAR::Shex)
     {
 	iplist.verify();
 	cout << hex << setfill('0');
@@ -77,15 +60,8 @@ int main (int argc, char* argv[])
     }
     else
     {
-        if (style == Sdashes)
-	{
-	    // TODO: write a manipulator for iplist.
-	    iplist.print(cout, true);
-	}
-	else // CIDR format
-	{
-	    cout << iplist;
-	}
+	// TODO: write a manipulator for iplist.
+	iplist.print(cout, (style == IPAR::Sdashes));
     }
 
     return 0;

@@ -16,4 +16,4 @@ diff \
         <(./ipar_read -hex < "$1") \
         <(./ipar_read -hex < "$2") \
     ) \
-    <(./ipar_expand < test_result.txt)
+    <(./ipar_expand -hex < test_result.txt)

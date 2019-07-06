@@ -6,6 +6,29 @@
 namespace IPAR {
 
 
+OutputStyle o_style (const std::string& arg)
+{
+    OutputStyle style;
+
+    if (arg == "-cidr")
+    {
+	style = Scidr;
+    }
+    else if (arg == "-dashes")
+    {
+	style = Sdashes;
+    }
+    else if (arg == "-hex")
+    {
+	style = Shex;
+    }
+    else
+    {
+	style = Sunknown;
+    }
+    return style;
+}
+
 //////////////////////////////////////
 // Implementation of TextReader class
 //////////////////////////////////////
