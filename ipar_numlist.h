@@ -22,12 +22,12 @@ class NumRange : private std::pair<BOUND, BOUND>
 {
 public:
 
-    NumRange() noexcept;
-    ~NumRange();
-    NumRange(NumRange const& other) noexcept;
-    NumRange& operator=(NumRange const& other) noexcept;
-    NumRange(NumRange&& other) noexcept;
-    NumRange& operator=(NumRange&& other) noexcept;
+    NumRange() = default;
+    ~NumRange()= default;
+    NumRange(NumRange const& other) = default;
+    NumRange& operator=(NumRange const& other) = default;
+    NumRange(NumRange&& other) = default;
+    NumRange& operator=(NumRange&& other) = default;
 
     // The only way to access content
     const std::pair<BOUND, BOUND>& get() const { return *this; }
@@ -55,7 +55,7 @@ class NumList : private std::map<BOUND,BOUND>
 public:
 
     NumList() noexcept;
-    ~NumList();
+    ~NumList() = default;
     NumList(NumList const& other) noexcept;
     NumList& operator=(NumList const& other) noexcept;
     NumList(NumList&& other) noexcept;

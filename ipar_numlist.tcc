@@ -74,46 +74,10 @@ const char* numeric_range_error::what() const noexcept
 ///////////////////////////
 
 template<typename BOUND, BOUND BMAX>
-NumRange<BOUND,BMAX>::NumRange() noexcept
- : std::pair<BOUND, BOUND>()
-{
-}
-
-template<typename BOUND, BOUND BMAX>
-NumRange<BOUND,BMAX>::~NumRange()
-{
-}
-
-template<typename BOUND, BOUND BMAX>
-NumRange<BOUND,BMAX>::NumRange(NumRange<BOUND,BMAX> const& other) noexcept
- : std::pair<BOUND, BOUND>(other)
-{
-}
-template<typename BOUND, BOUND BMAX>
 NumRange<BOUND,BMAX>::NumRange(const std::pair<BOUND,BOUND>& other)
     throw (numeric_range_error)
  : std::pair<BOUND, BOUND>(other)
 {
-}
-
-template<typename BOUND, BOUND BMAX>
-NumRange<BOUND,BMAX>& NumRange<BOUND,BMAX>::operator=(
-    NumRange<BOUND,BMAX> const& other) noexcept
-{
-    std::pair<BOUND, BOUND>::operator=(other);
-    return *this;
-}
-template<typename BOUND, BOUND BMAX>
-NumRange<BOUND,BMAX>::NumRange(NumRange<BOUND,BMAX>&& other) noexcept
- : std::pair<BOUND, BOUND>(other)
-{
-}
-template<typename BOUND, BOUND BMAX>
-NumRange<BOUND,BMAX>& NumRange<BOUND,BMAX>::operator=(
-    NumRange<BOUND,BMAX>&& other) noexcept
-{
-    std::pair<BOUND, BOUND>::operator=(other);
-    return *this;
 }
 
 template<typename BOUND, BOUND BMAX>
@@ -149,11 +113,6 @@ NumList<BOUND,BMAX>::NumList() noexcept
 }
 
 template<typename BOUND, BOUND BMAX>
-NumList<BOUND,BMAX>::~NumList()
-{
-}
-
-template<typename BOUND, BOUND BMAX>
 NumList<BOUND,BMAX>::NumList(const NumList<BOUND,BMAX>& other)
     noexcept
  : std::map<BOUND,BOUND>(other), mNumOperations(0)
@@ -171,6 +130,7 @@ NumList<BOUND,BMAX>& NumList<BOUND,BMAX>::operator=(
     const NumList<BOUND,BMAX>& other) noexcept
 {
     std::map<BOUND,BOUND>::operator=(other);
+    // mNumOperations unchanged
     return *this;
 }
 
@@ -179,6 +139,7 @@ NumList<BOUND,BMAX>&
 NumList<BOUND,BMAX>::operator=(NumList<BOUND,BMAX>&& other) noexcept
 {
     std::map<BOUND,BOUND>::operator=(other);
+    // mNumOperations unchanged
     return *this;
 }
 
