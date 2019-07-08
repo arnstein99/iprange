@@ -83,7 +83,7 @@ private:
 
 // This method does a batch-read of interval specifiers from an
 // istream into an IPAR list.
-int common_read (std::istream& ist, List& iplist) throw();
+int common_read (std::istream& ist, List& iplist);
 
 } // namespace IPAR
 

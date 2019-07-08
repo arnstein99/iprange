@@ -101,7 +101,7 @@ FileReader::FileReader(const std::string& filename)
 // Implementation of stand-alone functions
 ///////////////////////////////////////////
 
-int common_read (std::istream& ist, List& iplist) throw()
+int common_read (std::istream& ist, List& iplist)
 {
     // Loop over lines of input
     IPAR::TextReader reader(ist);

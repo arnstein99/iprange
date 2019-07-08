@@ -8,7 +8,7 @@ namespace IPAR
 
 namespace { // anonymous
 
-uint32_t string_to_int(const std::string& expr) throw (ip_domain_error)
+uint32_t string_to_int(const std::string& expr)
 {
     uint32_t retval = 0;
     std::string sub(expr);
@@ -71,7 +71,6 @@ int ceil_log2(uint32_t val)
     return retval;
 }
 std::pair<uint32_t,uint32_t> maker(const std::string& expr)
-    throw (ip_domain_error, ip_range_error)
 {
     std::string left, right;
     uint32_t lower, upper;
@@ -157,17 +156,17 @@ Range& Range::operator=(Range&& other) noexcept
     return *this;
 }
 
-Range::Range(uint32_t lower, uint32_t upper) throw(ip_range_error)
+Range::Range(uint32_t lower, uint32_t upper)
  : NumRange<uint32_t>(lower, upper)
 {
 }
 
-Range::Range(const std::string& expr) throw (ip_domain_error, ip_range_error)
+Range::Range(const std::string& expr)
  : NumRange<uint32_t>(maker(expr))
 {
 }
 
-Range::Range(Range& ra, std::string& middle) throw (ip_range_error)
+Range::Range(Range& ra, std::string& middle)
  : NumRange<uint32_t>(ra.get().first, quad_to_int(middle))
 {
 }
@@ -208,7 +207,7 @@ void List::add(const Range& range) noexcept
     NumList<uint32_t>::add(range);
 }
 
-void List::subtract(const Range& range) throw (std::exception)
+void List::subtract(const Range& range)
 {
     NumList<uint32_t>::subtract(range);
 }
@@ -259,11 +258,11 @@ void List::print(std::ostream& ost, bool dashes) const
     }
 }
 
-uint32_t List::min() const throw (numeric_range_error)
+uint32_t List::min() const
 {
     return NumList<uint32_t>::min();
 }
-uint32_t List::max() const throw (numeric_range_error)
+uint32_t List::max() const
 {
     return NumList<uint32_t>::max();
 }
@@ -279,7 +278,7 @@ unsigned long List::num_operations() const
     return NumList<uint32_t>::num_operations();
 }
 
-void List::verify() const throw (std::exception)
+void List::verify() const
 {
     NumList<uint32_t>::verify();
 }
@@ -301,7 +300,7 @@ std::string int_to_quad(uint32_t val)
 	int8_to_string (val        & 0xFF) ;
 }
 
-uint32_t quad_to_int(const std::string& expr) throw (ip_domain_error)
+uint32_t quad_to_int(const std::string& expr)
 {
     int part;
     uint32_t retval = 0;
@@ -326,7 +325,6 @@ uint32_t quad_to_int(const std::string& expr) throw (ip_domain_error)
 
 std::pair<uint32_t /*start*/, int /*bits*/> to_cidr (
     uint32_t lower_bound, uint32_t upper_bound)
-    throw (ip_range_error)
 {
     std::pair<uint32_t,int> retval;
 

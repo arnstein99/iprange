@@ -25,7 +25,7 @@ public:
 
 // Reads a IP address in format nn.nn.nn.nn and outputs an equivalent 32-bit
 // number
-uint32_t quad_to_int(const std::string& expr) throw (ip_domain_error);
+uint32_t quad_to_int(const std::string& expr);
 std::string int_to_quad(uint32_t val);
 
 // Inputs a range of integers and returns the smallest CIDR range that
@@ -33,8 +33,7 @@ std::string int_to_quad(uint32_t val);
 // and the number of fixed bits in the range. This format is what
 // iptables(1) uses.
 std::pair<uint32_t /*start*/, int /*bits*/> to_cidr (
-    uint32_t lower_bound, uint32_t upper_bound)
-    throw (ip_range_error);
+    uint32_t lower_bound, uint32_t upper_bound);
 
 // Available from ipar_numlist.h:
 // Compute the intersection of two intervals. If the return value is false, the
@@ -57,14 +56,14 @@ public:
     Range& operator=(Range const& other) noexcept;
     Range(Range&& other) noexcept;
     Range& operator=(Range&& other) noexcept;
-    Range(uint32_t lower, uint32_t upper) throw(ip_range_error);
-    Range(const std::string& expr) throw(ip_domain_error, ip_range_error);
+    Range(uint32_t lower, uint32_t upper);
+    Range(const std::string& expr);
 
     // Splitter-constructor. 
     // Note that the first argument is NOT const.
     // The second argument expresses a numeric IP address a.b.c.d that must be
     // within the range of the first argument.
-    Range(Range&, std::string& middle) throw (ip_range_error);
+    Range(Range&, std::string& middle);
 
 }; // class Range
 
@@ -87,22 +86,22 @@ public:
     void add (const Range&) noexcept;
 
     // Remove an interval of IP addresses.
-    void subtract (const Range&) throw (std::exception);
+    void subtract (const Range&);
 
     // Print out everything in the list. A series of strings nn.nn.nn.nn/nn in
     // sorted order. If dashes is true, output is nn.nn.nn.nn-nn.nn.nn.nn.
     void print(std::ostream& ost, bool dashes=false) const;
 
     // Statistics
-    uint32_t min() const throw (numeric_range_error);
-    uint32_t max() const throw (numeric_range_error);
+    uint32_t min() const;
+    uint32_t max() const;
 
     // For diagnostic use: how many non-trivial transformations have been
     // performed since construction.
     unsigned long num_operations() const;
 
     // For debugging
-    void verify() const throw (std::exception);
+    void verify() const;
 
 private:
 
