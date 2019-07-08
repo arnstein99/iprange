@@ -25,9 +25,9 @@ public:
     NumRange() = default;
     ~NumRange()= default;
     NumRange(NumRange const& other) = default;
-    NumRange& operator=(NumRange const& other) = default;
     NumRange(NumRange&& other) = default;
-    NumRange& operator=(NumRange&& other) = default;
+    NumRange& operator=(NumRange const& other) noexcept;
+    NumRange& operator=(NumRange&& other) noexcept;
 
     // The only way to access content
     const std::pair<BOUND, BOUND>& get() const { return *this; }
