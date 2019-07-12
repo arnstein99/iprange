@@ -55,7 +55,7 @@ int main (int argc, char* argv[])
     // Now subtract from the main list
     for (auto iter = complem.cbegin() ; iter != complem.cend() ; ++iter)
     {
-	mainlist.subtract (IPAR::Range(iter->first, iter->second));
+	mainlist.subtract_from (iter);
     }
 
     // Report

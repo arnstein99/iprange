@@ -206,10 +206,29 @@ void List::add(const Range& range) noexcept
 {
     NumList<uint32_t>::add(range);
 }
+void List::add_from (const NumList<uint32_t>::const_iterator& iter) noexcept
+{
+    NumList<uint32_t>::add_from(iter);
+}
+void List::add_from (const NumList<uint32_t>::const_reverse_iterator& iter)
+noexcept
+{
+    NumList<uint32_t>::add_from(iter);
+}
 
 void List::subtract(const Range& range)
 {
     NumList<uint32_t>::subtract(range);
+}
+void List::subtract_from (const NumList<uint32_t>::const_iterator& iter)
+noexcept
+{
+    NumList<uint32_t>::subtract_from(iter);
+}
+void List::subtract_from (const NumList<uint32_t>::const_reverse_iterator& iter)
+noexcept
+{
+    NumList<uint32_t>::subtract_from(iter);
 }
 
 void List::print(std::ostream& ost, bool dashes) const
