@@ -96,16 +96,22 @@ public:
     // Add an interval to the collection.
     void add (const NumRange<BOUND,BMAX>& range) noexcept {
         add_nover(range.first, range.second); }
+
+    // Remove an interval from the collection. The interval need not be part of
+    // the collection. This method handles overlaps, etc.
+    void subtract (const NumRange<BOUND,BMAX>& range) noexcept {
+        subtract_nover(range.first, range.second); }
+
     // Special-purpose versions, to avoid cost of constructing a Range
     // when transferring from one List to another
     void add_from (const NumList<BOUND,BMAX>::const_iterator& iter) 
         noexcept { add_nover(iter->first, iter->second); }
     void add_from (const NumList<BOUND,BMAX>::const_reverse_iterator& iter)
         noexcept { add_nover(iter->first, iter->second); }
-
-    // Remove an interval from the collection. The interval need not be part of
-    // the collection. This method handles overlaps, etc.
-    void subtract (const NumRange<BOUND,BMAX>& range);
+    void subtract_from (const NumList<BOUND,BMAX>::const_iterator& iter) 
+        noexcept { subtract_nover(iter->first, iter->second); }
+    void subtract_from (const NumList<BOUND,BMAX>::const_reverse_iterator& iter)
+        noexcept { subtract_nover(iter->first, iter->second); }
 
     // Report extreme values
     BOUND min() const;
@@ -121,6 +127,7 @@ public:
 private:
 
     void add_nover (BOUND lower, BOUND upper)  noexcept;
+    void subtract_nover (BOUND lower, BOUND upper)  noexcept;
     void subtract_sub1(
 	typename std::map<BOUND, BOUND>::iterator & check_iter,
         BOUND new_key, BOUND new_upper);
