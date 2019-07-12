@@ -239,27 +239,23 @@ void NumList<BOUND,BMAX>::add_nover (BOUND lower, BOUND upper)  noexcept
 }
 
 template<typename BOUND, BOUND BMAX>
-void NumList<BOUND,BMAX>::subtract (const NumRange<BOUND,BMAX>& range)
-    throw (std::exception)
+void NumList<BOUND,BMAX>::subtract_nover (BOUND lower, BOUND upper)  noexcept
 {
     // Eliminate a special case
     if (std::map<BOUND,BOUND>::empty()) return;
 
-    BOUND new_key   = range.first;
-    BOUND new_upper = range.second;
-
     // Find a location for the input element
-    auto check_iter = std::map<BOUND,BOUND>::lower_bound(new_key);
-    // if (new_key >= check_iter->first) ...
+    auto check_iter = std::map<BOUND,BOUND>::lower_bound(lower);
+    // if (lower >= check_iter->first) ...
     if (check_iter != this->cbegin()) --check_iter;
 
     // ... and this can only happen once.
-    if (new_key > check_iter->first)
-	subtract_sub1(check_iter, new_key, new_upper);
+    if (lower > check_iter->first)
+	subtract_sub1(check_iter, lower, upper);
 
     // Take care of adjacent or overlapping entries
     while (check_iter != this->cend())
-	subtract_sub2(check_iter, new_upper);
+	subtract_sub2(check_iter, upper);
 }
 
 template<typename BOUND, BOUND BMAX>

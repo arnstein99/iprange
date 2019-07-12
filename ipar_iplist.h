@@ -85,9 +85,15 @@ public:
 
     // Add an interval of IP addresses.
     void add (const Range&) noexcept;
+    void add_from (const NumList<uint32_t>::const_iterator& iter) noexcept;
+    void add_from (const NumList<uint32_t>::const_reverse_iterator& iter)
+        noexcept;
 
     // Remove an interval of IP addresses.
     void subtract (const Range&) throw (std::exception);
+    void subtract_from (const NumList<uint32_t>::const_iterator& iter) noexcept;
+    void subtract_from (const NumList<uint32_t>::const_reverse_iterator& iter)
+        noexcept;
 
     // Print out everything in the list. A series of strings nn.nn.nn.nn/nn in
     // sorted order. If dashes is true, output is nn.nn.nn.nn-nn.nn.nn.nn.
