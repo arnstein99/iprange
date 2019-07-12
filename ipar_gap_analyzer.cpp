@@ -85,11 +85,11 @@ void find_gaps(IPAR::List& iplist)
 {
     GapInfoSet gset;
 
-    for (auto range : iplist.get())
+    for (auto iter = iplist.cbegin() ; iter != iplist.cend() ; ++iter)
     {
 	// Debug code
 	cerr << '.' << flush;
-	my_process(iplist, gset, range.first, range.second);
+	my_process(iplist, gset, iter->first, iter->second);
     }
 
     // Report
@@ -142,8 +142,7 @@ GapInfo max_coverage (
 	    my_max = test_val;
     }
 
-    auto& access = iplist.get();
-    for (auto iter = access.lower_bound(lower_bound) ; iter != access.cend() ;
+    for (auto iter = iplist.lower_bound(lower_bound) ; iter != iplist.cend() ;
          ++iter)
     {
 	// Skip own self
@@ -171,8 +170,7 @@ std::pair<uint32_t,double>  coverage (
 {
     std::pair<uint32_t,double> cov {0, 0.0};
 
-    auto& access = iplist.get();
-    for (auto iter = access.lower_bound(lower_bound) ; iter != access.cend() ;
+    for (auto iter = iplist.lower_bound(lower_bound) ; iter != iplist.cend() ;
          ++iter)
     {
 	uint32_t inter_lower_bound, inter_upper_bound;

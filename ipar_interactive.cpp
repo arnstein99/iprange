@@ -77,10 +77,10 @@ int main (int argc, char* argv[])
 	if (style == IPAR::Shex)
 	{
 	    cout << hex << setfill('0');
-	    for (auto pr : iplist.get())
+            for (auto iter = iplist.cbegin() ; iter != iplist.cend() ; ++iter)
 	    {
-		uint32_t lower = pr.first;
-		while (lower <= pr.second)
+		uint32_t lower = iter->first;
+		while (lower <= iter->second)
 		{
 		    cout << setw(8) << lower++ << endl;
 		}
