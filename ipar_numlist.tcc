@@ -161,21 +161,17 @@ NumList<BOUND,BMAX>::operator=(NumList<BOUND,BMAX>&& other) noexcept
 }
 
 template<typename BOUND, BOUND BMAX>
-void NumList<BOUND,BMAX>::add (const NumRange<BOUND,BMAX>& range)
-    noexcept
+void NumList<BOUND,BMAX>::add_nover (BOUND lower, BOUND upper)  noexcept
 {
-    BOUND new_key   = range.first;
-    BOUND new_upper = range.second;
-
     // Dispensing with a special case simplifies matters
     if (std::map<BOUND,BOUND>::empty())
     {
-        (*this)[new_key] = new_upper;
+        (*this)[lower] = upper;
 	return;
     }
 
     // Find a home for the input element
-    auto pr = std::map<BOUND,BOUND>::insert(std::make_pair(new_key, new_upper));
+    auto pr = std::map<BOUND,BOUND>::insert(std::make_pair(lower, upper));
     auto base_iter = pr.first;
     auto check_iter = base_iter;
     if (pr.second)
@@ -212,8 +208,8 @@ void NumList<BOUND,BMAX>::add (const NumRange<BOUND,BMAX>& range)
     else
     {
 	// Found existing element, expand if if necessary
-        if (bad_order (new_upper, base_iter->second, BMAX))
-	    base_iter->second = new_upper;
+        if (bad_order (upper, base_iter->second, BMAX))
+	    base_iter->second = upper;
 
 	// Begin checking right after existing element
         ++check_iter;

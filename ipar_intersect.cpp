@@ -53,9 +53,9 @@ int main (int argc, char* argv[])
     } // End loop over input files to intersect
 
     // Now subtract from the main list
-    for (auto range : complem.get())
+    for (auto iter = complem.cbegin() ; iter != complem.cend() ; ++iter)
     {
-	mainlist.subtract (IPAR::Range(range.first, range.second));
+	mainlist.subtract (IPAR::Range(iter->first, iter->second));
     }
 
     // Report

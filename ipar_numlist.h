@@ -62,10 +62,46 @@ public:
     NumList& operator=(NumList&& other) noexcept;
 
     // The only way to access content
-    const std::map<BOUND, BOUND>& get() const { return *this; }
+    class const_iterator
+      : public std::map<BOUND,BOUND>::const_iterator
+    {
+        public:
+        const_iterator(
+            const typename std::map<BOUND,BOUND>::const_iterator& m)
+         : std::map<BOUND,BOUND>::const_iterator(m)
+        { }
+    };
+    class const_reverse_iterator
+      : public std::map<BOUND,BOUND>::const_reverse_iterator
+    {
+        public:
+        const_reverse_iterator(
+            const typename std::map<BOUND,BOUND>::const_reverse_iterator& m)
+         : std::map<BOUND,BOUND>::const_reverse_iterator(m)
+        { }
+    };
+    const_iterator cbegin() const {
+        return const_iterator(std::map<BOUND,BOUND>::cbegin()); }
+    const_reverse_iterator crbegin() const {
+        return const_reverse_iterator(std::map<BOUND,BOUND>::crbegin()); }
+    const_iterator cend() const {
+        return const_iterator(std::map<BOUND,BOUND>::cend()); }
+    const_reverse_iterator crend() const {
+        return const_reverse_iterator(std::map<BOUND,BOUND>::crend()); }
+    const_iterator lower_bound(BOUND left) {
+        return const_iterator(std::map<BOUND,BOUND>::lower_bound(left)); }
+    const_iterator upper_bound(BOUND left) {
+        return const_iterator(std::map<BOUND,BOUND>::upper_bound(left)); }
 
     // Add an interval to the collection.
-    void add (const NumRange<BOUND,BMAX>& range) noexcept;
+    void add (const NumRange<BOUND,BMAX>& range) noexcept {
+        add_nover(range.first, range.second); }
+    // Special-purpose versions, to avoid cost of constructing a Range
+    // when transferring from one List to another
+    void add_from (const NumList<BOUND,BMAX>::const_iterator& iter) 
+        noexcept { add_nover(iter->first, iter->second); }
+    void add_from (const NumList<BOUND,BMAX>::const_reverse_iterator& iter)
+        noexcept { add_nover(iter->first, iter->second); }
 
     // Remove an interval from the collection. The interval need not be part of
     // the collection. This method handles overlaps, etc.
@@ -85,6 +121,7 @@ public:
 
 private:
 
+    void add_nover (BOUND lower, BOUND upper)  noexcept;
     void subtract_sub1(
 	typename std::map<BOUND, BOUND>::iterator & check_iter,
         BOUND new_key, BOUND new_upper)
