@@ -235,7 +235,7 @@ void NumList<BOUND,BMAX>::add_nover (BOUND lower, BOUND upper)  noexcept
 }
 
 template<typename BOUND, BOUND BMAX>
-void NumList<BOUND,BMAX>::subtract_nover (BOUND lower, BOUND upper)  noexcept
+void NumList<BOUND,BMAX>::subtract_nover (BOUND lower, BOUND upper) noexcept
 {
     // Eliminate a special case
     if (std::map<BOUND,BOUND>::empty()) return;
