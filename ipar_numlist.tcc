@@ -134,7 +134,7 @@ NumList<BOUND,BMAX>::NumList(const NumList<BOUND,BMAX>& other)
 
 template<typename BOUND, BOUND BMAX>
 NumList<BOUND,BMAX>::NumList(NumList<BOUND,BMAX>&& other) noexcept
- : std::map<BOUND,BOUND>(other), mNumOperations(0)
+ : std::map<BOUND,BOUND>(std::move(other)), mNumOperations(0)
 {
 }
 
@@ -151,7 +151,7 @@ template<typename BOUND, BOUND BMAX>
 NumList<BOUND,BMAX>&
 NumList<BOUND,BMAX>::operator=(NumList<BOUND,BMAX>&& other) noexcept
 {
-    std::map<BOUND,BOUND>::operator=(other);
+    std::map<BOUND,BOUND>::operator=(std::move(other));
     // mNumOperations unchanged
     return *this;
 }

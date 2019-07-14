@@ -147,12 +147,12 @@ Range& Range::operator=(Range const& other) noexcept
     return *this;
 }
 Range::Range(Range&& other) noexcept
- : NumRange<uint32_t>(other)
+ : NumRange<uint32_t>(std::move(other))
 {
 }
 Range& Range::operator=(Range&& other) noexcept
 {
-    NumRange<uint32_t>::operator=(other);
+    NumRange<uint32_t>::operator=(std::move(other));
     return *this;
 }
 
@@ -193,12 +193,12 @@ List& List::operator=(List const& other) noexcept
     return *this;
 }
 List::List(List&& other) noexcept
- : NumList<uint32_t>(other)
+ : NumList<uint32_t>(std::move(other))
 {
 }
 List& List::operator=(List&& other) noexcept
 {
-    NumList<uint32_t>::operator=(other);
+    NumList<uint32_t>::operator=(std::move(other));
     return *this;
 }
 
