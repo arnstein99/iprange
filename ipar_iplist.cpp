@@ -70,7 +70,7 @@ int ceil_log2(uint32_t val)
     if ((static_cast<uint32_t>(1) << retval) != val) ++retval;
     return retval;
 }
-std::pair<uint32_t,uint32_t> maker(const std::string& expr)
+Range maker(const std::string& expr)
 {
     std::string left, right;
     uint32_t lower, upper;
@@ -106,7 +106,7 @@ std::pair<uint32_t,uint32_t> maker(const std::string& expr)
 	    upper = lower = quad_to_int(expr);
 	}
     }
-    return std::make_pair(lower, upper);
+    return Range (lower, upper);
 }
 
 } // namespace anonymous
@@ -167,7 +167,7 @@ Range::Range(const std::string& expr)
 }
 
 Range::Range(Range& ra, std::string& middle)
- : NumRange<uint32_t>(ra.get().first, quad_to_int(middle))
+ : NumRange<uint32_t>(ra.first, quad_to_int(middle))
 {
 }
 
@@ -206,29 +206,9 @@ void List::add(const Range& range) noexcept
 {
     NumList<uint32_t>::add(range);
 }
-void List::add_from (const NumList<uint32_t>::const_iterator& iter) noexcept
-{
-    NumList<uint32_t>::add_from(iter);
-}
-void List::add_from (const NumList<uint32_t>::const_reverse_iterator& iter)
-noexcept
-{
-    NumList<uint32_t>::add_from(iter);
-}
-
 void List::subtract(const Range& range)
 {
     NumList<uint32_t>::subtract(range);
-}
-void List::subtract_from (const NumList<uint32_t>::const_iterator& iter)
-noexcept
-{
-    NumList<uint32_t>::subtract_from(iter);
-}
-void List::subtract_from (const NumList<uint32_t>::const_reverse_iterator& iter)
-noexcept
-{
-    NumList<uint32_t>::subtract_from(iter);
 }
 
 void List::print(std::ostream& ost, bool dashes) const

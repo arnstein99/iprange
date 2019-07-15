@@ -5,6 +5,7 @@
 #include <functional>
 #include <limits>
 #include <map>
+#include "ipar_readonly.h"
 
 namespace IPAR {
 
@@ -18,7 +19,7 @@ template<typename BOUND, BOUND BMAX> class NumList;
 
 // A dense interval.
 template<typename BOUND, BOUND BMAX=std::numeric_limits<BOUND>::max()>
-class NumRange : private std::pair<BOUND, BOUND>
+class NumRange : public std::pair< ReadOnly<BOUND>, ReadOnly<BOUND> >
 {
 public:
 
@@ -29,12 +30,8 @@ public:
     NumRange& operator=(NumRange const& other) noexcept;
     NumRange& operator=(NumRange&& other) noexcept;
 
-    // The only way to access content
-    const std::pair<BOUND, BOUND>& get() const { return *this; }
-
     // Construct from lower and upper bounds. Correct ordering is checked.
     NumRange(BOUND lower, BOUND upper);
-    NumRange(const std::pair<BOUND,BOUND>& other);
 
     // Splitter-constructor. Note that the argument is NOT const.
     // Shortens the length of this interval and returns a new interval
@@ -50,7 +47,7 @@ public:
 // that the intervals are always sorted, and there are never two adjacent or
 // overlapping intervals.
 template<typename BOUND, BOUND BMAX=std::numeric_limits<BOUND>::max()>
-class NumList : private std::map<BOUND,BOUND>
+class NumList : private std::map< ReadOnly<BOUND>, ReadOnly<BOUND> >
 {
 public:
 
@@ -61,57 +58,45 @@ public:
     NumList(NumList&& other) noexcept;
     NumList& operator=(NumList&& other) noexcept;
 
+    using MapType=std::map< ReadOnly<BOUND>, ReadOnly<BOUND> >;
+
     // The only way to access content
     class const_iterator
-      : public std::map<BOUND,BOUND>::const_iterator
+      : public MapType::const_iterator
     {
         public:
-        const_iterator(
-            const typename std::map<BOUND,BOUND>::const_iterator& m)
-         : std::map<BOUND,BOUND>::const_iterator(m)
+        const_iterator(const typename MapType::const_iterator& m)
+         : MapType::const_iterator(m)
         { }
     };
     class const_reverse_iterator
-      : public std::map<BOUND,BOUND>::const_reverse_iterator
+      : public MapType::const_reverse_iterator
     {
         public:
         const_reverse_iterator(
-            const typename std::map<BOUND,BOUND>::const_reverse_iterator& m)
-         : std::map<BOUND,BOUND>::const_reverse_iterator(m)
+            const typename MapType::const_reverse_iterator& m)
+         : MapType::const_reverse_iterator(m)
         { }
     };
     const_iterator cbegin() const {
-        return const_iterator(std::map<BOUND,BOUND>::cbegin()); }
+        return const_iterator(MapType::cbegin()); }
     const_reverse_iterator crbegin() const {
-        return const_reverse_iterator(std::map<BOUND,BOUND>::crbegin()); }
+        return const_reverse_iterator(MapType::crbegin()); }
     const_iterator cend() const {
-        return const_iterator(std::map<BOUND,BOUND>::cend()); }
+        return const_iterator(MapType::cend()); }
     const_reverse_iterator crend() const {
-        return const_reverse_iterator(std::map<BOUND,BOUND>::crend()); }
+        return const_reverse_iterator(MapType::crend()); }
     const_iterator lower_bound(BOUND left) {
-        return const_iterator(std::map<BOUND,BOUND>::lower_bound(left)); }
+        return const_iterator(MapType::lower_bound(left)); }
     const_iterator upper_bound(BOUND left) {
-        return const_iterator(std::map<BOUND,BOUND>::upper_bound(left)); }
+        return const_iterator(MapType::upper_bound(left)); }
 
     // Add an interval to the collection.
-    void add (const NumRange<BOUND,BMAX>& range) noexcept {
-        add_nover(range.first, range.second); }
+    void add (const NumRange<BOUND,BMAX>& range) noexcept;
 
     // Remove an interval from the collection. The interval need not be part of
     // the collection. This method handles overlaps, etc.
-    void subtract (const NumRange<BOUND,BMAX>& range) noexcept {
-        subtract_nover(range.first, range.second); }
-
-    // Special-purpose versions, to avoid cost of constructing a Range
-    // when transferring from one List to another.
-    void add_from (const NumList<BOUND,BMAX>::const_iterator& iter) 
-        noexcept { add_nover(iter->first, iter->second); }
-    void add_from (const NumList<BOUND,BMAX>::const_reverse_iterator& iter)
-        noexcept { add_nover(iter->first, iter->second); }
-    void subtract_from (const NumList<BOUND,BMAX>::const_iterator& iter) 
-        noexcept { subtract_nover(iter->first, iter->second); }
-    void subtract_from (const NumList<BOUND,BMAX>::const_reverse_iterator& iter)
-        noexcept { subtract_nover(iter->first, iter->second); }
+    void subtract (const NumRange<BOUND,BMAX>& range) noexcept;
 
     // Report extreme values
     BOUND min() const;
@@ -126,13 +111,11 @@ public:
 
 private:
 
-    void add_nover (BOUND lower, BOUND upper)  noexcept;
-    void subtract_nover (BOUND lower, BOUND upper)  noexcept;
     void subtract_sub1(
-	typename std::map<BOUND, BOUND>::iterator & check_iter,
+	typename MapType::iterator & check_iter,
         BOUND new_key, BOUND new_upper);
     void subtract_sub2(
-	typename std::map<BOUND, BOUND>::iterator & check_iter,
+	typename MapType::iterator & check_iter,
         BOUND new_upper);
 
     unsigned long mNumOperations;

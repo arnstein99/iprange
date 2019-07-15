@@ -33,8 +33,8 @@ bool bad_order (BOUND left_second, BOUND right_first, BOUND bmax)
 
 template<typename BOUND>
 void verify_special (
-    const std::map<BOUND,BOUND>& rep,
-    const typename std::map<BOUND,BOUND>::iterator& first,
+    const std::map< ReadOnly<BOUND>, ReadOnly<BOUND> >& rep,
+    const typename std::map< ReadOnly<BOUND>, ReadOnly<BOUND> >::iterator& first,
     const BOUND bmax)
 {
     auto iter = first;
@@ -76,7 +76,7 @@ template<typename BOUND, BOUND BMAX>
 NumRange<BOUND,BMAX>& NumRange<BOUND,BMAX>::operator=(NumRange const& other)
 noexcept
 {
-    std::pair<BOUND, BOUND>::operator= (other);
+    std::pair< ReadOnly<BOUND>, ReadOnly<BOUND> >::operator= (other);
     return *this;
 }
 
@@ -84,22 +84,17 @@ template<typename BOUND, BOUND BMAX>
 NumRange<BOUND,BMAX>& NumRange<BOUND,BMAX>::operator=(NumRange&& other)
 noexcept
 {
-    std::pair<BOUND, BOUND>::operator= (other);
+    std::pair< ReadOnly<BOUND>, ReadOnly<BOUND> >::operator= (other);
     return *this;
 }
 
 
 template<typename BOUND, BOUND BMAX>
-NumRange<BOUND,BMAX>::NumRange(const std::pair<BOUND,BOUND>& other)
- : std::pair<BOUND, BOUND>(other)
-{
-}
-
-template<typename BOUND, BOUND BMAX>
 NumRange<BOUND,BMAX>::NumRange(BOUND lower, BOUND upper)
- : std::pair<BOUND, BOUND>(lower, upper)
 {
     if (lower > upper) throw numeric_range_error();
+    this->first.mData = lower;
+    this->second.mData = upper;
 }
 
 template<typename BOUND, BOUND BMAX>
@@ -121,20 +116,20 @@ NumRange<BOUND,BMAX>::NumRange(NumRange& nr, BOUND middle)
 
 template<typename BOUND, BOUND BMAX>
 NumList<BOUND,BMAX>::NumList() noexcept
- : std::map<BOUND,BOUND>(), mNumOperations(0)
+ : MapType(), mNumOperations(0)
 {
 }
 
 template<typename BOUND, BOUND BMAX>
 NumList<BOUND,BMAX>::NumList(const NumList<BOUND,BMAX>& other)
     noexcept
- : std::map<BOUND,BOUND>(other), mNumOperations(0)
+ : MapType(other), mNumOperations(0)
 {
 }
 
 template<typename BOUND, BOUND BMAX>
 NumList<BOUND,BMAX>::NumList(NumList<BOUND,BMAX>&& other) noexcept
- : std::map<BOUND,BOUND>(std::move(other)), mNumOperations(0)
+ : MapType(std::move(other)), mNumOperations(0)
 {
 }
 
@@ -142,7 +137,7 @@ template<typename BOUND, BOUND BMAX>
 NumList<BOUND,BMAX>& NumList<BOUND,BMAX>::operator=(
     const NumList<BOUND,BMAX>& other) noexcept
 {
-    std::map<BOUND,BOUND>::operator=(other);
+    MapType::operator=(other);
     // mNumOperations unchanged
     return *this;
 }
@@ -151,23 +146,23 @@ template<typename BOUND, BOUND BMAX>
 NumList<BOUND,BMAX>&
 NumList<BOUND,BMAX>::operator=(NumList<BOUND,BMAX>&& other) noexcept
 {
-    std::map<BOUND,BOUND>::operator=(std::move(other));
+    MapType::operator=(std::move(other));
     // mNumOperations unchanged
     return *this;
 }
 
 template<typename BOUND, BOUND BMAX>
-void NumList<BOUND,BMAX>::add_nover (BOUND lower, BOUND upper)  noexcept
+void NumList<BOUND,BMAX>::add (const NumRange<BOUND,BMAX>& range) noexcept
 {
     // Dispensing with a special case simplifies matters
-    if (std::map<BOUND,BOUND>::empty())
+    if (MapType::empty())
     {
-        (*this)[lower] = upper;
+        (*this)[range.lower] = range.upper;
 	return;
     }
 
     // Find a home for the input element
-    auto pr = std::map<BOUND,BOUND>::insert(std::make_pair(lower, upper));
+    auto pr = MapType::insert(range);
     auto base_iter = pr.first;
     auto check_iter = base_iter;
     if (pr.second)
@@ -191,7 +186,7 @@ void NumList<BOUND,BMAX>::add_nover (BOUND lower, BOUND upper)  noexcept
 		    prev_iter->second = base_iter->second;
 
 		// The new element is now completely redundant
-		base_iter = std::map<BOUND,BOUND>::erase (base_iter);
+		base_iter = MapType::erase (base_iter);
 		--base_iter; // Points back to prev_iter
 
 		++mNumOperations;
@@ -204,8 +199,8 @@ void NumList<BOUND,BMAX>::add_nover (BOUND lower, BOUND upper)  noexcept
     else
     {
 	// Found existing element, expand if if necessary
-        if (bad_order (upper, base_iter->second, BMAX))
-	    base_iter->second = upper;
+        if (bad_order (range.upper, base_iter->second, BMAX))
+	    base_iter->second = range.upper;
 
 	// Begin checking right after existing element
         ++check_iter;
@@ -221,7 +216,7 @@ void NumList<BOUND,BMAX>::add_nover (BOUND lower, BOUND upper)  noexcept
 		base_iter->second = check_iter->second;
 
 	    // The old element is now completely redundant, as before.
-	    check_iter = std::map<BOUND,BOUND>::erase(check_iter);
+	    check_iter = MapType::erase(check_iter);
 	    base_iter = std::prev(check_iter);
 
 	    ++mNumOperations;
@@ -235,23 +230,23 @@ void NumList<BOUND,BMAX>::add_nover (BOUND lower, BOUND upper)  noexcept
 }
 
 template<typename BOUND, BOUND BMAX>
-void NumList<BOUND,BMAX>::subtract_nover (BOUND lower, BOUND upper) noexcept
+void NumList<BOUND,BMAX>::subtract (const NumRange<BOUND,BMAX>& range) noexcept
 {
     // Eliminate a special case
-    if (std::map<BOUND,BOUND>::empty()) return;
+    if (MapType::empty()) return;
 
     // Find a location for the input element
-    auto check_iter = std::map<BOUND,BOUND>::lower_bound(lower);
-    // if (lower >= check_iter->first) ...
+    auto check_iter = MapType::lower_bound(range.lower);
+    // if (range.lower >= check_iter->first) ...
     if (check_iter != this->cbegin()) --check_iter;
 
     // ... and this can only happen once.
-    if (lower > check_iter->first)
-	subtract_sub1(check_iter, lower, upper);
+    if (range.lower > check_iter->first)
+	subtract_sub1(check_iter, range.lower, range.upper);
 
     // Take care of adjacent or overlapping entries
     while (check_iter != this->cend())
-	subtract_sub2(check_iter, upper);
+	subtract_sub2(check_iter, range.upper);
 }
 
 template<typename BOUND, BOUND BMAX>
@@ -263,14 +258,14 @@ unsigned long NumList<BOUND,BMAX>::num_operations() const
 template<typename BOUND, BOUND BMAX>
 BOUND NumList<BOUND,BMAX>::min() const
 {
-    if (std::map<BOUND,BOUND>::empty()) throw (numeric_range_error());
+    if (MapType::empty()) throw (numeric_range_error());
     return this->cbegin()->first;
 }
 
 template<typename BOUND, BOUND BMAX>
 BOUND NumList<BOUND,BMAX>::max() const
 {
-    if (std::map<BOUND,BOUND>::empty()) throw (numeric_range_error());
+    if (MapType::empty()) throw (numeric_range_error());
     return this->crbegin()->second;
 }
 
@@ -301,7 +296,7 @@ void NumList<BOUND,BMAX>::verify() const
 
 template<typename BOUND, BOUND BMAX>
 void NumList<BOUND,BMAX>::subtract_sub1(
-    typename std::map<BOUND, BOUND>::iterator & check_iter,
+    typename MapType::iterator & check_iter,
     BOUND new_key, BOUND new_upper)
 {
     // This method is only valid
@@ -329,7 +324,7 @@ void NumList<BOUND,BMAX>::subtract_sub1(
 	replacement_upper = check_iter->second;
 	check_iter->second = new_key; --(check_iter->second);
 	auto pr = std::make_pair(replacement_lower, replacement_upper);
-	check_iter = std::map<BOUND,BOUND>::insert(std::next(check_iter), pr);
+	check_iter = MapType::insert(std::next(check_iter), pr);
 	++check_iter;
 	++mNumOperations;
     }
@@ -347,7 +342,7 @@ void NumList<BOUND,BMAX>::subtract_sub1(
 
 template<typename BOUND, BOUND BMAX>
 void NumList<BOUND,BMAX>::subtract_sub2(
-    typename std::map<BOUND, BOUND>::iterator & check_iter,
+    typename MapType::iterator & check_iter,
     BOUND new_upper)
 {
     // This method is only valid
@@ -363,7 +358,7 @@ void NumList<BOUND,BMAX>::subtract_sub2(
 	//           result:                **********
 
 	// Indicate completion
-	check_iter = std::map<BOUND,BOUND>::end();
+	check_iter = MapType::end();
 	return;
     }
 
@@ -377,9 +372,9 @@ void NumList<BOUND,BMAX>::subtract_sub2(
 	//           result:           *****
 	replacement_lower = new_upper; ++replacement_lower;
 	replacement_upper = check_iter->second;
-	check_iter = std::map<BOUND,BOUND>::erase(check_iter);
+	check_iter = MapType::erase(check_iter);
 	auto pr = std::make_pair(replacement_lower, replacement_upper);
-	check_iter = std::map<BOUND,BOUND>::insert(check_iter, pr);
+	check_iter = MapType::insert(check_iter, pr);
 	++check_iter;
 	++mNumOperations;
     }
@@ -389,7 +384,7 @@ void NumList<BOUND,BMAX>::subtract_sub2(
 	//            minus: ***************
 	//            minus: *******************
 	//           result:
-	check_iter = std::map<BOUND,BOUND>::erase(check_iter);
+	check_iter = MapType::erase(check_iter);
 	++mNumOperations;
     }
 }
