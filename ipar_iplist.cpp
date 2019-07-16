@@ -70,7 +70,7 @@ int ceil_log2(uint32_t val)
     if ((static_cast<uint32_t>(1) << retval) != val) ++retval;
     return retval;
 }
-Range maker(const std::string& expr)
+std::pair<uint32_t,uint32_t>  maker(const std::string& expr)
 {
     std::string left, right;
     uint32_t lower, upper;
@@ -106,7 +106,7 @@ Range maker(const std::string& expr)
 	    upper = lower = quad_to_int(expr);
 	}
     }
-    return Range (lower, upper);
+    return std::make_pair(lower,upper);
 }
 
 } // namespace anonymous
@@ -162,8 +162,10 @@ Range::Range(uint32_t lower, uint32_t upper)
 }
 
 Range::Range(const std::string& expr)
- : NumRange<uint32_t>(maker(expr))
 {
+    auto pr = maker(expr);
+    first.mData = pr.first;
+    second.mData = pr.second;
 }
 
 Range::Range(Range& ra, std::string& middle)
