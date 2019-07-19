@@ -15,29 +15,31 @@ using namespace std;
 int main (int argc, char* argv[])
 {
     // Process arguments
-    IPAR::OutputStyle style;
+    bool bHex = false;
     switch (argc)
     {
     case 1:
-	style = IPAR::Scidr;
         break;
     case 2:
-        style = IPAR::o_style(argv[1]);
-	if (style == IPAR::Sunknown)
+        if (std::string(argv[1]) == "-hex")
 	{
-	    cerr << "Usage: ipar_expand [-cidr|-dashes|-hex]" << endl;
+	    bHex = true;
+	}
+	else
+	{
+	    cerr << "Usage: ipar_expand [-hex]" << endl;
 	    cerr << "(no other arguments)" << endl;
 	    return 1;
 	}
         break;
     default:
-        cerr << "Usage: ipar_expand [-cidr|-dashes|-hex]" << endl;
+        cerr << "Usage: ipar_expand [-hex]" << endl;
 	cerr << "(no other arguments)" << endl;
 	return 1;
     }
 
     // Choose hex output if necessary
-    if (style == IPAR::Shex) cout << hex << setfill('0');
+    if (bHex) cout << hex << setfill('0');
 
     // Loop over lines of input
     IPAR::TextReader reader(cin);
@@ -59,10 +61,11 @@ int main (int argc, char* argv[])
 	auto upper = iprange.get().second;
 	while (lower <= upper)
 	{
-	    if (style == IPAR::Shex)
-		cout << setw(8) << lower++ << endl;
+	    if (bHex)
+		cout << setw(8) << lower << endl;
 	    else
-		cout << IPAR::int_to_quad(lower++) << endl;
+		cout << IPAR::int_to_quad(lower) << endl;
+	    ++lower;
 	}
     }
 
