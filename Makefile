@@ -1,8 +1,3 @@
-# Tuning
-CXXFLAGS += \
-    -O
-    # -g -O0
-
 SUFFIXES += .d
 CXXFLAGS += \
     -std=c++14 -Wall -Wpedantic -Wextra -Wduplicated-cond \
@@ -22,6 +17,11 @@ Q_ = @
 ifdef VERBOSE
     Q_ =
 endif
+ifdef DEBUG
+    CXXFLAGS += -g -O0
+else
+    CXXFLAGS += -O
+endif
 
 DEPFILES:=$(patsubst %.cpp,%.d,$(SOURCES))
 
@@ -40,7 +40,7 @@ all: $(PROGRAMS) $(DEPFILES)
 	$(Q_)$(CXX) $(CXXFLAGS) -c $< -o $@
 
 install: $(PROGRAMS)
-	cp $(PROGRAMS) $(HOME)/bin
+	install -m 755 $(PROGRAMS) /usr/local/bin
 clean:
 	$(RM) *.o *.d $(PROGRAMS)
 

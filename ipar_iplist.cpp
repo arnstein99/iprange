@@ -257,6 +257,10 @@ void List::print(std::ostream& ost, bool dashes) const
 		if (zbits == 0)
 		{
 		    ost << int_to_quad(lower) << std::endl;
+		    // Avoid numeric overflow
+		    static const uint32_t bmax =
+			std::numeric_limits<uint32_t>::max();
+		    if (lower == bmax) break;
 		    ++lower;
 		}
 		else
