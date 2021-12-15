@@ -33,14 +33,14 @@ public:
     const std::pair<BOUND, BOUND>& get() const { return *this; }
 
     // Construct from lower and upper bounds. Correct ordering is checked.
-    NumRange(BOUND lower, BOUND upper) throw (numeric_range_error);
-    NumRange(const std::pair<BOUND,BOUND>& other) throw (numeric_range_error);
+    NumRange(BOUND lower, BOUND upper);
+    NumRange(const std::pair<BOUND,BOUND>& other);
 
     // Splitter-constructor. Note that the argument is NOT const.
     // Shortens the length of this interval and returns a new interval
     // representing that which was removed. The new interval starts with
     // argument middle.
-    NumRange(NumRange& nr, BOUND middle) throw (numeric_range_error);
+    NumRange(NumRange& nr, BOUND middle);
 
     friend class NumList<BOUND,BMAX>;
 
@@ -69,30 +69,27 @@ public:
 
     // Remove an interval from the collection. The interval need not be part of
     // the collection. This method handles overlaps, etc.
-    void subtract (const NumRange<BOUND,BMAX>& range)
-        throw (std::exception);
+    void subtract (const NumRange<BOUND,BMAX>& range);
 
     // Report extreme values
-    BOUND min() const throw (numeric_range_error);
-    BOUND max() const throw (numeric_range_error);
+    BOUND min() const;
+    BOUND max() const;
 
     // For diagnostic use: how many non-trivial transformations have been
     // performed since construction.
     unsigned long num_operations() const;
 
     // For debugging
-    void verify() const throw (std::exception);
+    void verify() const;
 
 private:
 
     void subtract_sub1(
 	typename std::map<BOUND, BOUND>::iterator & check_iter,
-        BOUND new_key, BOUND new_upper)
-	    throw ();
+        BOUND new_key, BOUND new_upper);
     void subtract_sub2(
 	typename std::map<BOUND, BOUND>::iterator & check_iter,
-        BOUND new_upper)
-	    throw ();
+        BOUND new_upper);
 
     unsigned long mNumOperations;
 

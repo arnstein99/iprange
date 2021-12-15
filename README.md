@@ -3,7 +3,8 @@ Utilities and libraries for manipulating lists of ranges of IPV4 addresses
 
 ## Building
 
-Just type `make`. This project uses C++14 and the bash shell. C++11 suffices.
+Just type `make`. The Makefile specifies C++2a, but C++11 suffices. Edit the
+Makefile to change the C++ version if desired.
 
 ## Programs
 

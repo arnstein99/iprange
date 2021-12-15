@@ -36,7 +36,6 @@ void verify_special (
     const std::map<BOUND,BOUND>& rep,
     const typename std::map<BOUND,BOUND>::iterator& first,
     const BOUND bmax)
-throw (std::exception)
 {
     auto iter = first;
     if (iter == rep.end()) return;
@@ -75,14 +74,12 @@ const char* numeric_range_error::what() const noexcept
 
 template<typename BOUND, BOUND BMAX>
 NumRange<BOUND,BMAX>::NumRange(const std::pair<BOUND,BOUND>& other)
-    throw (numeric_range_error)
  : std::pair<BOUND, BOUND>(other)
 {
 }
 
 template<typename BOUND, BOUND BMAX>
 NumRange<BOUND,BMAX>::NumRange(BOUND lower, BOUND upper)
-    throw (numeric_range_error)
  : std::pair<BOUND, BOUND>(lower, upper)
 {
     if (lower > upper) throw numeric_range_error();
@@ -90,7 +87,6 @@ NumRange<BOUND,BMAX>::NumRange(BOUND lower, BOUND upper)
 
 template<typename BOUND, BOUND BMAX>
 NumRange<BOUND,BMAX>::NumRange(NumRange& nr, BOUND middle)
-   throw (numeric_range_error)
  : std::pair<BOUND, BOUND>(nr.first, middle)
 {
     if (middle == BMAX) throw numeric_range_error();
@@ -227,7 +223,6 @@ void NumList<BOUND,BMAX>::add (const NumRange<BOUND,BMAX>& range)
 
 template<typename BOUND, BOUND BMAX>
 void NumList<BOUND,BMAX>::subtract (const NumRange<BOUND,BMAX>& range)
-    throw (std::exception)
 {
     // Eliminate a special case
     if (std::map<BOUND,BOUND>::empty()) return;
@@ -256,21 +251,21 @@ unsigned long NumList<BOUND,BMAX>::num_operations() const
 }
 
 template<typename BOUND, BOUND BMAX>
-BOUND NumList<BOUND,BMAX>::min() const throw (numeric_range_error)
+BOUND NumList<BOUND,BMAX>::min() const
 {
     if (std::map<BOUND,BOUND>::empty()) throw (numeric_range_error());
     return this->cbegin()->first;
 }
 
 template<typename BOUND, BOUND BMAX>
-BOUND NumList<BOUND,BMAX>::max() const throw (numeric_range_error)
+BOUND NumList<BOUND,BMAX>::max() const
 {
     if (std::map<BOUND,BOUND>::empty()) throw (numeric_range_error());
     return this->crbegin()->second;
 }
 
 template<typename BOUND, BOUND BMAX>
-void NumList<BOUND,BMAX>::verify() const throw (std::exception)
+void NumList<BOUND,BMAX>::verify() const
 {
     auto iter = this->cbegin();
     if (iter == this->cend()) return;
@@ -298,7 +293,6 @@ template<typename BOUND, BOUND BMAX>
 void NumList<BOUND,BMAX>::subtract_sub1(
     typename std::map<BOUND, BOUND>::iterator & check_iter,
     BOUND new_key, BOUND new_upper)
-	throw ()
 {
     // This method is only valid
     // if (new_key > check_iter->first)
@@ -345,7 +339,6 @@ template<typename BOUND, BOUND BMAX>
 void NumList<BOUND,BMAX>::subtract_sub2(
     typename std::map<BOUND, BOUND>::iterator & check_iter,
     BOUND new_upper)
-	throw ()
 {
     // This method is only valid
     // if (new_key <= check_iter->first)

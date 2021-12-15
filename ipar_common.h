@@ -37,7 +37,7 @@ public:
     TextReader(TextReader const& other) = delete;
     TextReader& operator=(TextReader const& other) = delete;
     TextReader(TextReader&& other) = default;
-    TextReader& operator=(TextReader&& other) = default;
+    TextReader& operator=(TextReader&& other) = delete;
 
     TextReader(std::istream& ist);
     TextReader& operator>> (std::string& word);
@@ -66,7 +66,7 @@ public:
     FileReader(FileReader const& other) = delete;
     FileReader& operator=(FileReader const& other) = delete;
     FileReader(FileReader&& other) = default;
-    FileReader& operator=(FileReader&& other) = default;
+    FileReader& operator=(FileReader&& other) = delete;
 
     FileReader(const std::string& filename);
     FileReader& operator>> (std::string& word) { mTr >> word; return *this; }
@@ -83,7 +83,7 @@ private:
 
 // This method does a batch-read of interval specifiers from an
 // istream into an IPAR list.
-int common_read (std::istream& ist, List& iplist) throw();
+int common_read (std::istream& ist, List& iplist) noexcept;
 
 } // namespace IPAR
 
