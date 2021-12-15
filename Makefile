@@ -1,6 +1,6 @@
 SUFFIXES += .d
 CXXFLAGS += \
-    -std=c++14 -Wall -Wpedantic -Wextra -Wduplicated-cond \
+    -std=c++2a -Wall -Wpedantic -Wextra -Wduplicated-cond \
     -Wlogical-op -Wnull-dereference \
     -Wdouble-promotion -Wshadow -Wformat=2 \
     -Wold-style-cast -Wuseless-cast
