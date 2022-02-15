@@ -46,8 +46,10 @@ int main (int argc, char* argv[])
     } // End loop over input files to subtract
 
     // Report
-    cerr << mainlist.num_operations() << " operations applied" << endl;
+    auto numLines = mainlist.num_output();
+    cerr << mainlist.num_operations() << " operations applied, ";
     cout << mainlist;
+    cerr << mainlist.num_output() - numLines << " lines output" << endl;
 
     return 0;
 }

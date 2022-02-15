@@ -44,7 +44,8 @@ int main (int argc, char* argv[])
     if (int retval = IPAR::common_read (cin, iplist) != 0) return retval;
 
     // Report
-    cerr << iplist.num_operations() << " operations applied" << endl;
+    cerr << iplist.num_operations() << " operations applied, ";
+    auto numLines = iplist.num_output();
     if (style == IPAR::Shex)
     {
 	iplist.verify();
@@ -63,6 +64,7 @@ int main (int argc, char* argv[])
 	// TODO: write a manipulator for iplist.
 	iplist.print(cout, (style == IPAR::Sdashes));
     }
+    cerr << iplist.num_output() - numLines << " lines output" << endl;
 
     return 0;
 }

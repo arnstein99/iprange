@@ -106,10 +106,16 @@ public:
     // performed since construction.
     unsigned long num_operations() const;
 
+    // For diagnostic use: how many lines of text have been written out
+    // since construction.
+    unsigned long num_output() const;
+
     // For debugging
     void verify() const;
 
 private:
+
+    mutable unsigned long mNumOutput;
 
 }; // class List
 

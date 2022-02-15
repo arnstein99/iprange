@@ -177,7 +177,7 @@ Range::Range(Range& ra, std::string& middle)
 ////////////////////////////////
 
 List::List() noexcept
- : NumList<uint32_t>()
+ : NumList<uint32_t>(), mNumOutput(0)
 {
 }
 List::~List()
@@ -242,6 +242,7 @@ void List::print(std::ostream& ost, bool dashes) const
 	    if (iter->second != lower)
 		ost << '-' << int_to_quad(iter->second);
 	    ost << std::endl;
+	    ++mNumOutput;
 	}
     }
     else
@@ -257,6 +258,7 @@ void List::print(std::ostream& ost, bool dashes) const
 		if (zbits == 0)
 		{
 		    ost << int_to_quad(lower) << std::endl;
+		    ++mNumOutput;
 		    // Avoid numeric overflow
 		    static const uint32_t bmax =
 			std::numeric_limits<uint32_t>::max();
@@ -269,6 +271,7 @@ void List::print(std::ostream& ost, bool dashes) const
 		    uint32_t middle = lower | mask;
 		    ost << int_to_quad(lower) << '/' << (32 - zbits)
 			<< std::endl;
+		    ++mNumOutput;
 		    // Avoid numeric overflow
 		    static const uint32_t bmax =
 			std::numeric_limits<uint32_t>::max();
@@ -298,6 +301,11 @@ std::ostream& operator<< (std::ostream& ost, const List& list)
 unsigned long List::num_operations() const
 {
     return NumList<uint32_t>::num_operations();
+}
+
+unsigned long List::num_output() const
+{
+    return mNumOutput;
 }
 
 void List::verify() const

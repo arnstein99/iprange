@@ -59,8 +59,10 @@ int main (int argc, char* argv[])
     }
 
     // Report
-    cerr << mainlist.num_operations() << " operations applied" << endl;
+    cerr << mainlist.num_operations() << " operations applied, ";
+    auto numLines = mainlist.num_output();
     cout << mainlist;
+    cerr << mainlist.num_output() - numLines << " lines output" << endl;
 
     return 0;
 }
