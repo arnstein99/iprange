@@ -35,7 +35,7 @@ using GapInfoSet = std::set<GapInfo>;
 
 // Compute score of a range wrt an IPAR list
 std::pair<uint32_t,double>  coverage (
-    uint32_t lower_bound, uint32_t upper_bound, IPAR::List& list);
+    uint32_t lower_bound, uint32_t upper_bound, const IPAR::List& list);
 // Note: there must exist a [lower_bound, ????] in the list.
 
 // Find extension of interval with the most coverage
@@ -165,7 +165,7 @@ GapInfo max_coverage (
 
 // Compute score of a range wrt an IPAR list
 std::pair<uint32_t,double>  coverage (
-    uint32_t lower_bound, uint32_t upper_bound, IPAR::List& iplist)
+    uint32_t lower_bound, uint32_t upper_bound, const IPAR::List& iplist)
 // Note: there must exist a [lower_bound, ????] in the list.
 {
     std::pair<uint32_t,double> cov {0, 0.0};

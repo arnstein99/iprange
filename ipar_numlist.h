@@ -88,9 +88,9 @@ public:
         return const_iterator(std::map<BOUND,BOUND>::cend()); }
     const_reverse_iterator crend() const {
         return const_reverse_iterator(std::map<BOUND,BOUND>::crend()); }
-    const_iterator lower_bound(BOUND left) {
+    const_iterator lower_bound(BOUND left) const {
         return const_iterator(std::map<BOUND,BOUND>::lower_bound(left)); }
-    const_iterator upper_bound(BOUND left) {
+    const_iterator upper_bound(BOUND left) const {
         return const_iterator(std::map<BOUND,BOUND>::upper_bound(left)); }
 
     // Add an interval to the collection.
